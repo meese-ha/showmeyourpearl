@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="nav">
+<style>
+	.panel-left{
+		position:absolute;
+		font-size:2em;
+		top:70%;
+		float:left;
+		height:260px;
+		width:350px;
+		padding:0;
+		margin: 0;
+	}
+	
+	.label2{
+	list-style-type: none;
+	text-align: left;
+
+	}
+	
+	.menu-label a{
+		display:block;
+		text-decoration: none;	
+		color:#b8b8b8;
+	}
+ 
+	
+	.label2 a:hover {
+		background-color:#a8a8a8;
+		color:black;
+	}
+
+
+	ul.label2 >  li ul.drop {
+		display: none;	
+	}
+
+	 ul.label2 >  li:hover ul.drop {
+		display:block;
+	}
+	
+	.drop{
+		list-style:none;
+		font-size: 1.5rem;
+	}
+ 
+	</style>
+	<div class="panel-left">
+		<ul class="label2">
+			<li class="menu-label"><a href="/mypage">마이 페이지</a></li>
+			<li class="menu-label"><a href="/mypage/edit">프로필 수정</a></li>
+			<li class="menu-label" id="dropbtn"><a href="/mypage/myfund">펀딩 정보</a>
+				<ul class="drop">
+					<li class="menu-label"><a href="/mypage/myfund">나의 펀딩</a></li>
+					<li class="menu-label"><a href="/mypage/donafund">후원하는 펀딩</a></li>
+				</ul></li>
+			<li class="menu-label"><a href="/mypage/subinfo">구독 정보</a></li>
+		</ul>
+	</div>
+</nav>
+</html>

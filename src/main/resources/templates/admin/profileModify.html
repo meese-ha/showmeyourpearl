@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+
+	<div class="container">
+		<div class="row d-md-flex justify-content-center">
+			<div class="col-md-12 col-lg-6 half p-3 py-5 pl-lg-5">
+				<h2 class="mb-4">회원 정보</h2>
+				<hr>
+				<form th:action="@{/admin/member/profileModify}" method="POST"
+					id="profileModifySend" name="profileModifySend" class="profileModifySend">				
+					<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">회원 번호</label> <input type="text"
+								class="form-control" id="memNum" name="memNum"
+								th:value="${vo.memNum}" readonly>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">이름</label> <input type="text"
+								class="form-control" id="memName" name="memName"
+								th:value="${vo.memName}" >
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">이메일</label> <input type="text"
+								class="form-control" id="memEmail" name="memEmail"
+								th:value="${vo.memEmail}" readonly>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">전화 번호</label> <input type="text"
+								class="form-control" id="PhoneNumber" name="memPhone"
+								placeholder="PhoneNumber" th:value="${vo.memPhone}" >
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">비밀번호</label> <input
+								type="password" class="form-control" id="Password"
+								name="memPass" placeholder="Password" th:value="${vo.memPass}"
+								>
+						</div>
+					</div>
+				 	<div class="col-md-6">
+						<div class="form-group">
+								<select name="" id="memLevel" th:field="${vo.memLevel}" th:value="${vo.memLevel}" class="form-control">
+									<option th:value="${vo.memLevel}" th:text="${vo.memLevel}"></option>
+									<option th:value="'member'" th:text="'member'"></option>
+									<option th:value="'admin'" th:text="'admin'"></option>
+								</select>
+						</div>
+					</div> 
+					 <div class="col-md-6">
+						<div class="form-group">
+								<select name="" id="memBank" th:field="${vo.memBank}" th:value="${vo.memBank}" class="form-control">
+										<option th:value="${vo.memBank}" th:text="${vo.memBank}"></option>
+										<option th:value="'국민은행'" th:text="국민은행"></option>
+										<option th:value="'신한은행'" th:text="신한은행"></option>
+										<option th:value="'농협은행'" th:text="농협은행"></option>
+										<option th:value="'우리은행'" th:text="우리은행"></option>
+										<option th:value="'하나은행'" th:text="하나은행"></option>
+										<option th:value="'카카오뱅크'" th:text="카카오뱅크"></option>
+								</select>
+							</div>
+						</div>  
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="label" for="name">계좌번호</label> <input type="text"
+								class="form-control" id="memAccount" placeholder="Account"
+								th:value="${vo.memAccount}">
+						</div>
+					</div>
+					<hr>
+					<div class="col-md-12">
+						<div class="form-group" >
+							<a th:href="@{/admin/member/profile(memNum=${vo.memNum})}"><span class="fa fa-chevron-left"></span></a>
+							<input type="button" id="btnModify" value="수정하기"
+								class="btn btn-primary py-3 px-4" style="width: 20%; float: right; margin: 5px;">
+						</div>
+					</div>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="fragments/footer :: footer"> </footer>
+	<script th:inline="javascript">
+	
+
+	
+	  $( document ).ready( function() { 
+		  /*<![CDATA[*/
+			 var memNum = [[${vo.memNum}]];
+		 /*]]*/
+		 	 $("#btnModify").on('click', function() {  // 클래스값이 delete인 엘리먼트가 눌리면?
+			 window.location.href='/admin/modifyForm/delete?memNum=' + "@{vo.memNum}";
+		    }); 
+		 
+		  
+		 $("#btnModify").click(function(e){
+			 e.preventDefault();
+		     editsomething();
+	});
+		 function editsomething() {
+					
+				 	var specialCheck = /[~!@#$%^&*()_+|<>?:{}]/;
+				 	var ckname = $('#memName').val();	 
+		    			if(ckname=="") {
+		    				alert("닉네임을 입력해주세요");
+		    				$('#memName').focus();
+		    				return false;
+		    			} else if(ckname.search(/\s/) != -1) {
+		    				alert("닉네임을 공백없이 입력해주세요");
+		    				$('#memName').focus();
+		    				return false;
+		    			} else if (specialCheck.test(ckname)) {
+		    				alert("닉네임은 특수문자를 포함 할 수 없습니다."); 
+		    				$('#memName').focus();
+		    				return false;
+		    			}
+		    			 var regExp = /^[0-9]*$/;
+			    		 var cknumber = $('#PhoneNumber').val();	 
+			    			 if(cknumber=="") {
+			    				alert("전화번호를 입력해주세요");
+			    				$('#PhoneNumber').focus();
+			    				return false;
+			    			}  else if( !regExp.test(cknumber)) {
+			    			     alert("숫자만 입력가능합니다.");
+			    			     $('#PhoneNumber').focus();
+			    				return false;  
+			    			}  
+			    			  
+			    		 var psRegex = /^[a-zA-Z0-9!@#$%^&*()?_~]{8,20}$/	 
+			    		 var ckps = $('#Password').val();
+			    		 	if(ckps!=""&& !psRegex.test(ckps)) {
+			    			     alert("비밀번호는 숫자, 영문, 특수문자(!@$%^&*?_~ 만 허용) 조합으로 8~20자리를 사용해야 합니다.");
+			    			     $('#Password').focus();
+			    				return false;  
+			    		 	}  
+			    		 	
+			    		var ckbank = $('#memBank').val();	 
+					    var ckaccount = $('#memAccount').val();
+					    console.log(ckbank, ckaccount);
+					    	if((ckbank == null||ckbank == "") && (ckaccount!= "")) {
+					    	alert("은행을 입력해주세요");
+					    	$('#memBank').focus();
+					    	return false;
+					    }  else if((ckbank != "") && (ckaccount == null||ckaccount== "")) {
+					    	alert("계좌번호를 입력해주세요");
+					    	$('#memAccount').focus();
+					    	return false;
+					    } /* else if( !regExp.test(ckaccount)) {
+					    	alert("숫자만 입력가능합니다.");
+					    	$('#memAccount').focus();
+					    	return false;
+					    }  */
+		    		$("#profileModifySend").submit();
+		    	 }
+		 
+			 });
+	</script>
+</body>
+</html>

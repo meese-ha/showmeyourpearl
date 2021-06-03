@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<style>
+li {
+	list-style: none;
+}
+</style>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+
+	<section class="ftco-section bg-light">
+		<div class="container">
+			<div class="row justify-content-center pb-5 mb-3">
+				<div
+					class="col-md-7 heading-section text-center ftco-animate fadeInUp ftco-animated">
+					<h2>펀딩 관리</h2>
+				</div>
+			</div>
+			<div class="row">
+				<nav>
+					<div class="panel-left ftco-animate fadeInUp ftco-animated block-7"
+						style="margin-right: 30px; padding: 30px 30px 30px 0px;">
+						<ul>
+							<li class="menu-label"><a href="/admin/member"
+								style="color: #000;">▶ 회원 관리</a></li>
+							<li class="menu-label"><a href="/admin/post"
+								style="color: #000;">▶ 게시물 관리</a></li>
+							<li class="menu-label"><h5 style="marin-bottom: 0px;">
+									<a href="/admin/fund">▶ 펀딩 관리</a>
+								</h5></li>
+							<li class="menu-label"><a href="/admin/fund"
+								style="margin-left: 20px; color: #000;">-펀딩 목록</a></li>
+							<li class="menu-label"><a href="/admin/payment"
+								style="margin-left: 20px;">-결제 목록</a></li>
+						</ul>
+					</div>
+				</nav>
+				<div class="ftco-animate fadeInUp ftco-animated"
+					style="display: inline-block; width: 75%">
+					<div class="block-7">
+						<div class="text-center p-4">
+							 <form th:fragment="search"  id="searchForm" th:action="@{/admin/payment}" method="get" class="search-form" >
+				<div class="input-group show" style="margin-bottom: 10px;">
+					<button class="btn btn-primary dropdown-toggle" type="button"
+						id="dropdownMenuButton" data-toggle="dropdown" style="width: 15%;">전체 보기</button>
+					<input type="hidden" name="currentPage" value="1"> 
+					<input type="hidden" name="amount" th:value="${vo.amount}"> 
+					<input type="hidden" name="pageAmount" th:value="${vo.pageAmount}">
+					<input type="hidden" name="searchType" th:value="${vo.searchType}">
+					<div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton" x-placement="bottom-start"
+						style="position: absolute; transform: translate3d(0px, 52px, 0px); top: 0px; left: 0px; will-change: transform; overflow: visible; 
+						aria-expanded: false;">
+						<span class="dropdown-item" onclick="searchType(this)" data-srch="">전체 보기</span> 
+						<span class="dropdown-item" onclick="searchType(this)" data-srch="paynum">결제 번호</span> 
+						<span class="dropdown-item" onclick="searchType(this)" data-srch="memnum">회원 번호</span> 
+						<span class="dropdown-item" onclick="searchType(this)" data-srch="fundnum">펀딩 번호</span>
+					</div>
+
+					<input type="text" class="form-control" placeholder="Search..."
+						style="width: 65%; margin-left: 10px; margin-right: 10px;"
+						name="searchKeyword" id="keyword" th:value="${vo.searchKeyword}">
+					<button class="btn btn-primary" type="button" id="srchBtn"
+						style="width: 15%;">Search</button>
+				</div>
+			</form>  
+							<hr>
+							<div class="block-7">
+								<button class="btn btn-danger" type="button" id="btnRemove"
+									style="float: left; width: 15%;">삭제하기</button>
+									</div>
+							<table id="table" class="styled-table" align="center" style="width: 100%">
+								<thead style="color: black;">
+									<th><input type="checkbox" name="cbAll" value="cbAll"></th>
+									<th>결제 번호</th>
+									<th>회원 번호</th>
+									<th>펀딩 번호</th>
+									<th>결제 일자</th>
+									<th>결제 금액</th>
+								</thead>
+								<tbody>
+									<tr th:each="p : ${list }">
+										<td><input type="checkbox" name="cb" th:value="${p.payNum}"></td>
+										<td>[[${p.payNum}]]</td>
+										<td><a th:href="@{/admin/member/profile(memNum=${p.memNum})}">[[${p.memNum}]]</a></td>
+										<td><a th:href="@{/fund/get(fundNum=${p.fundNum})}">[[${p.fundNum}]]</a></td>
+										<td>[[${p.payTime}]]</td>
+										<td
+											th:text="${#numbers.formatDecimal(p.payTotal, 0, 'COMMA', 0, 'POINT')}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			 <div class="row mt-5">
+          <div class="col text-center">
+            <div th:replace="fragments/pagination :: pagination"></div>
+          </div>
+        </div>
+		</div>
+	</section>
+
+	<footer th:replace="fragments/footer :: footer"> </footer>
+
+</body>
+<th:block layout:fragment="script">
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+$(document).ready(function(){
+		var type = [[${vo.searchType ==''?'':vo.searchType}]];
+		if(type == 'paynum'){
+			$('#dropdownMenuButton').html('결제 번호');
+		} else if(type == 'memnum') {
+			$('#dropdownMenuButton').html('회원 번호');
+		} else if(type == 'fundnum') {
+			$('#dropdownMenuButton').html('펀딩 번호');
+		} else {
+			$('#dropdownMenuButton').html('전체 보기');
+//	$('#searchForm #keyword').val('');
+		}
+});
+$("#srchBtn").click(function(e){
+	e.preventDefault();
+	var form = $('#searchForm');
+	searchBoard(form);
+});
+
+function searchBoard(form) {
+	/*[- 드롭다운이 아닌 메인 검색 키워드로 검색했을 때 -]*/
+		var searchKeyword = $("#keyword");
+		var searchType = $('input[name=searchType]').val();
+		if(searchType !== ''&& searchType != null&&searchKeyword.val() === '') {
+			console.log(searchType);
+			alert("키워드를 입력해 주세요.");
+			searchKeyword.focus();
+			return false;
+		}
+		form.submit();
+}
+
+function searchType(item){
+		$('#dropdownMenuButton').html($(item).html());
+		console.log($(item).html());
+		if($(item).html()=='전체 보기') $('#searchForm #keyword').val('');
+		$('#searchForm input[name=searchType]').val($(item).attr('data-srch'));
+		console.log($('#searchForm input[name=searchType]').val());
+	}
+
+/*]]>*/
+
+/*<![CDATA[*/
+
+function movePage(uri, queryString) {
+	location.href = uri + queryString ;
+}
+
+/*]]>*/
+
+	function checkboxdelete(arr){
+		var zero = false;
+		for(var i=0; i<arr.length; i++){
+			console.log(arr);
+			if(arr[i]>0){
+				zero = true;
+				break;
+			}
+		}
+			if(!zero){
+			alert("하나 이상 선택해주세요");
+			return false;
+			}else {
+				alert("회원번호 " + arr + "번을 삭제합니다.");
+				window.location.href='/admin/payment/delete?payNum=' + arr;
+			}
+
+		}
+
+		$(document).ready(function() {
+		$('input[name=cbAll]').on('change', function() {
+			$('input[name=cb]').prop('checked', this.checked);
+		});
+		
+		$('#btnRemove').on("click", function() {
+			var arr = $('input[name=cb]:checked').serializeArray().map(function(item) { return item.value });
+			checkboxdelete(arr);
+			
+		});
+	});
+
+		$('.dropdown-item').on('click', function() {
+			var value = $(this).text();
+
+			$('#dropdownMenuButton').text(value);
+		});
+
+		$('#srchBtn').on('click', function() {
+			var searchType = $('#dropdownMenuButton').text();
+			var strSearchValue = $('#txtSearch').val();
+			var searchValue = parseInt(strSearchValue);
+			
+			
+			if(searchType == '전체보기') {
+				searchType = 'all';
+			}
+			else if(searchType == '결제번호') {
+				searchType = 'payNum';
+			}
+			else if(searchType == '회원번호') {
+				searchType = 'memNum';
+			}
+			else if(searchType == '펀딩번호') {
+				searchType = 'fundNum';
+			}
+			
+			var param = {'searchType': searchType,
+							'searchValue': searchValue};
+			
+			console.log(param);
+			
+			$.ajax({
+				url : '/admin/searchPayment',
+				contentType : "application/json; charset=UTF-8",
+				data : param,
+				type : 'POST',
+				dataType : 'json',
+				success : function(result) {
+					console.log(result);
+					console.log(result.length);
+					
+				},
+                error: function(error) {
+                	console.log(error);
+                }  
+			});
+		});
+	
+</script>
+</html>

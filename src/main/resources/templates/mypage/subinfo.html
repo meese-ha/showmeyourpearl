@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<head th:insert="/fragments/head.html::head" th:remove="tag">
+	</head>
+	
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<style>
+.sub-table {
+	width:800px;
+	border-top: 1px solid #444444;
+    border-collapse: collapse;
+    text-align: center;
+    padding-right: 100px;
+}
+
+
+th {
+	font-weight : bold;
+	border-bottom: 1px solid #444444;
+    padding: 10px;
+    color:black;
+    background-color:#343a40;
+    color:white;
+    border-bottom: 2px solid black;
+  }
+
+td {
+        border-bottom: 1px solid #444444;
+    	padding: 10px;
+  }
+
+.subname {
+	width:400px;
+}
+
+</style>
+  <body>
+
+   <header th:replace="fragments/header :: header"> </header>
+   
+	
+   
+    <section th:replace="/fragments/section.html::section"></section>
+    <section style="min-height:500px;">
+    <nav th:replace="mypage/common :: nav"></nav>
+			<div class="overlay"></div>
+    	<div class="container">
+    		<div class="row">
+    			<div class="row d-md-flex justify-content-center">
+    				<div class="col-md-12 col-lg-6 half p-3 py-5 pl-lg-5 ">
+    				<h5 style="font-size:3em;font-weight: bold;margin-bottom:30px;">구독 정보</h5>
+    				<input type="hidden" th:value="${#authentication.principal.member.memNum}" id="userNum">
+   				<table class="sub-table" >
+							<thead>
+							<tr>
+								<th class="subname">회원 닉네임</th>
+								<th>구독 관리</th>
+							</tr>	
+							</thead>
+							<tbody>
+								<tr th:each="sub : ${list}" >
+									<td><a href="#"><img th:src="@{/images/person_1.jpg}" alt="Image placeholder" class="img-fluid" 
+									style="width: 40px;	height:40px; border-radius: 20px;"></a>
+									&nbsp&nbsp&nbsp<a th:href="@{/mypage(memNum=${sub.memNum})}" th:text="${sub.memName}">
+									</a></td>
+									<td><input type="button" value="Unsubscribe" th:onclick="'subscribe('+${sub.memNum}+')'"
+									style="cursor:pointer; background-color:#343a40; border-radius:5px; color:white;"
+									th:id="btnSub+${sub.memNum}"></td>
+								</tr>	
+							</tbody>
+						</table>
+								</div>	
+	    			</div>
+	    		</div>
+	    	</div>
+    </section>
+<script type="text/javascript">
+function subscribe(memNum){
+	var audience = $("#userNum").val();
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	var param = {"artist":memNum, "audience":audience*1}
+	console.log(param);
+	$.ajax({
+		method : 'POST',
+		url:'/subscribe',
+		data: JSON.stringify(param),
+		beforeSend: function(xhr){
+			xhr.setRequestHeader(header, token);
+		},
+		dataType:'text',
+		contentType:'application/json; charset=utf-8',
+		success:function(data){
+			var btn = '#btnSub'+memNum;
+			if($(btn).val()=='Subscribe'){
+			 	alert("구독하셨습니다");
+			 	$(btn).css('background-color', '#343a40');
+				$(btn).val('Unsubscribe');
+			}else {
+			 	alert("구독해지하셨습니다");
+			 	$(btn).css('background-color', 'gray');
+				$(btn).val('Subscribe');
+			}
+			console.log(data);
+	 	},error:function(e){
+	 		console.log("ERROR : ", e);
+            alert("로그인후 이용가능합니다.");
+            //location.href="/login";
+		}
+	});
+}
+</script>
+
+<footer th:replace="fragments/footer :: footer"> </footer>
+    
+  </body>
+</html>

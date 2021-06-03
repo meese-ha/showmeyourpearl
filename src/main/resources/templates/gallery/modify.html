@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head th:insert="/fragments/head.html::head">
+  </head>
+  <body>
+
+    <header th:replace="/fragments/header.html::header"></header>
+    <section th:replace="/fragments/section.html::section"></section>
+    
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+			<div class="overlay"></div>
+    	<div class="container">
+    	<div class="row no-gutters">
+	    						<div class="col-md-5 d-flex align-items-stretch">
+										<div class="select_img"><img style="width:350px;" id="uploadImg" th:src="@{'/gallery/display?fileName='+${gallery.picture.picPath}+'/'+${gallery.picture.picUuid}+'_'+${gallery.picture.picName}+'.'+${gallery.picture.picTail}}" alt="" /></div>
+									</div>
+								<div class="col-md-7">
+									<div class="contact-wrap w-100 p-md-5 p-4">
+										<h3 class="mb-4">업로드 된 사진 수정</h3>
+										<form method="POST" th:action="@{|/gallery/modify?${_csrf.parameterName}=${_csrf.token}|}" enctype="multipart/form-data" id="modifyForm" name="contactForm" class="contactForm">
+											<input type="hidden" name="memEmail" th:value="${writer}">
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group">
+														<input type="hidden" th:value="${gallery.boardNum}" name="boardNum">
+														<input type="text" th:value="${gallery.boardTitle}" class="form-control" name="boardTitle" id="boardTitle" placeholder="제목을 입력하세요">
+													</div>
+												</div>
+												<div class="col-md-12">
+													<div class="form-group">
+														<textarea name="boardContent" th:text="${gallery.boardContent}" class="form-control" id="boardContent" cols="30" rows="10" placeholder="내용을 입력하세요"></textarea>
+													</div>
+												</div>
+												<div class="col-md-12">
+													<div class="form-group row">
+									            <label for="inputFile" class="col-sm-2 col-form-label"><strong>첨부 파일</strong></label>
+									            <div class="col-sm-10">
+									                <div class="custom-file" id="inputFile">
+									                    <input name="file" type="file" class="custom-file-input" id="customFile" accept="image/*"
+									                    th:value="${gallery.picture.picName+'.'+gallery.picture.picTail}">
+									                    <label class="custom-file-label" for="customFile">파일을 선택해 주세요.</label>
+									                </div>
+									            </div>
+								        	</div>
+				   							</div>
+												<div class="col-md-12">
+													<div class="form-group">
+														<input type="submit" value="업로드" class="btn btn-primary">
+														<input type="button" value="취소" class="btn btn-danger" id="modiCancel">
+														<div class="submitting"></div>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+
+							</div>
+    			</div>
+    </section> <!-- .section -->
+    
+<script>
+	var select = false;
+
+	$('input[type=submit]').click(function(){
+		event.preventDefault();		
+		if($('#boardTitle').val()==""){
+			alert('제목을 입력해주세요.');
+			$('#boardTitle').focus();
+			return;
+		}else if($('#boardContent').val()==""){
+			alert('내용을 입력해주세요.')
+			$('#boardContent').focus();
+			return;
+// 		}else if(select&&($('#customFile').val()==null||$('#customFile').val()=="")){
+// 			alert('사진을 선택해주세요.')
+// 			return;
+		}
+		$('#modifyForm').submit();
+	});
+
+	$('#modiCancel').click(function(){
+		event.preventDefault();
+		location.href="/gallery/get?boardNum="+$('input[name=boardNum]').val();
+	});
+	
+	$(".custom-file-input").change(function() {
+		select = true;
+		var file = $(this)[0].files;
+		var fileName = $(this).val();
+		console.log(""+fileName);
+		var fileExt = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+		console.log(""+fileExt);
+		console.log(""+file[0].size);
+		if(fileExt!="jpg"&&fileExt!="jpeg"&&fileExt!="gif"&&fileExt!="png"&&fileExt!="bmp"){
+			alert("이미지 파일이 아닙니다");
+			$(this).val("");
+			return;
+		} else if(file[0].size >= 5242880){
+			alert("5MB이하의 이미지만 사용가능합니다");
+			return false;
+		}
+		
+		if(this.files&& this.files[0]){
+			var reader = new FileReader;
+			reader.onload = function(data){
+				$('#uploadImg').attr("src", data.target.result).width(400);    
+			}
+			reader.readAsDataURL(this.files[0]);
+		}
+	  var fileName = $(this).val().split("\\").pop();
+	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+</script>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+  
+  </body>
+</html>

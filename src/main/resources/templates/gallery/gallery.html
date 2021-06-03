@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head th:insert="/fragments/head.html::head">
+  </head>
+  <body>
+
+    <header th:replace="/fragments/header.html::header"></header>
+    <section th:replace="/fragments/section.html::section"></section>
+	
+	<section class="ftco-section bg-light">
+			<div class="container">
+			<div class="mb-5">
+			<input type="button" class="btn btn-dark" onclick="location.href='/gallery/write'" value="사진올리기">
+    			<div class="col-md-12">
+    			<div align="center">
+					<span><a th:href="@{/gallery/list}">시간순</a></span>|
+					<!-- <span><a href="#">조회순</a></span> -->
+					<span><a th:href="|@{/gallery/list}${vo.makeQueryString(vo.currentPage)}&allign=favorite|">인기순</a></span>| 
+					<span><a th:href="|@{/gallery/list}${vo.makeQueryString(vo.currentPage)}&allign=like|">좋아요순</a></span>|
+					<span><a th:href="|@{/gallery/list}${vo.makeQueryString(vo.currentPage)}&allign=sad|">슬퍼요순</a></span>|
+					<span><a th:href="|@{/gallery/list}${vo.makeQueryString(vo.currentPage)}&allign=angry|">화나요순</a></span>|
+					<span><a th:href="|@{/gallery/list}${vo.makeQueryString(vo.currentPage)}&allign=happy|">즐거워요순</a></span>
+					</div>
+					
+					<!-- -----------------------검색창 ---------------------------------->
+					<form th:replace="fragments/pagination :: search"></form>
+					
+					
+    		</div>
+    		</div>
+    		<div class="row mt-4 d-flex">
+          <div class="col-md-6 col-lg-3 ftco-animate" th:each="gallery : ${gallery}" th:object="${gallery.picture}">
+          	<div class="staff">
+            <div class="img-wrap d-flex align-items-stretch">
+              <a th:href="|@{/gallery/get}${vo.makeQueryString(vo.currentPage)}&boardNum=${gallery.boardNum}|" 
+              class="img align-self-stretch" 
+              th:style="'background-image: url(/gallery/display?fileName='+*{picPath}+'/'+*{picUuid}+'_'+*{picName}+'.'+*{picTail}+');'" th:if="${gallery.picture} ne null">
+              </a>
+              </div>
+              <div class="text pt-3 px-3 pb-4 text-center">
+              	<div class="meta mb-2">
+                  <div><a th:href="|@{/gallery/get}${vo.makeQueryString(vo.currentPage)}&boardNum=${gallery.boardNum}|" th:text="${gallery.boardTitle}"></a>
+                  <a th:href="|@{/gallery/get}${vo.makeQueryString(vo.currentPage)}&boardNum=${gallery.boardNum}|" class="meta-chat"><span class="fa fa-comment"></span> [[${gallery.replyCount}]]</a></div>
+                  <span class="position mb-2" th:text="${gallery.boardDate}">Date</span>
+                  <div th:inline="text"><a th:href="@{/mypage(memNum=${gallery.memNum})}" th:text="${gallery.memName}"></a><a th:if="${gallery.funding}" th:href="@{/gallery/fund(memNum=${gallery.memNum})}" class="tag-cloud-link" style="background-color:#19a2b8; color:white; margin-left:5px;">Proceeding</a></div>
+                </div>
+                <div class="faded">
+									<ul class="ftco-social text-center">
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="like"><span class="fa" th:text="${gallery.like>0?gallery.like:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="sad"><span class="fa" th:text="${gallery.sad>0?gallery.sad:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="angry"><span class="fa" th:text="${gallery.angry>0?gallery.angry:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="happy"><span class="fa" th:text="${gallery.happy>0?gallery.happy:0}"></span></a></li>
+		              </ul>
+	              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-5">
+          <div class="col text-center">
+            <div th:replace="fragments/pagination :: pagination"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var emo = '&allign='+([[${vo.allign}]]==null?'':[[${vo.allign}]]);
+	function movePage(uri, queryString) {
+		location.href = uri + queryString + emo;
+	}
+
+	/*]]>*/
+</script>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+  
+  </body>
+</html>

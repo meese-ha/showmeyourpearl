@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="ftco-section ftco-degree-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 ftco-animate">
+					<div class="form-group">
+						<input type="text" class="form-control"
+							placeholder="Write your funding title.">
+					</div>
+					<p>
+						<img src="images/image_1.jpg" alt="" class="img-fluid">
+					</p>
+					<div class="sidebar-box ftco-animate">
+						<h3>간략한 소개글</h3>
+						<p>이 밤 그날의 반딧불을 당신의 창 가까이 보낼게요. 음 사랑한다는 말이에요. 나 우리의 첫 입맞춤을 떠올려
+							그럼 언제든 눈을 감고 음 가장 먼 곳으로 가요. 난 파도가 머물던 모래 위에 적힌 글씨처럼 그대가 멀리 사라져 버릴
+							것 같아 늘 그리워 그리워</p>
+					</div>
+				</div>
+				<!-- .col-md-8 -->
+
+
+
+				<div class="col-lg-4 sidebar pl-lg-5 ftco-animate">
+					<div class="sidebar-box">
+						<div style="margin: 0px 7px 7px 0px;">
+							<img src="images/person_1.jpg" alt="Image placeholder"
+								style="width: 40px; height: 40px; border-radius: 20px;"> <span>정원빈</span><span>&nbsp;&nbsp;작가님
+								펀딩 </span> <span class="tagcloud"> <span> <a
+									class="tag-cloud-link"
+									style="background-color: #6c757d; color: white;">Expired</a>
+							</span>
+							</span>
+
+
+						</div>
+
+						<div class="form-group">
+							목표 금액 <input type="text" class="form-control"
+								placeholder="Target Amount">
+						</div>
+						<div>
+							달성률 <input type="text" class="form-control"
+								placeholder="Achievement rate">
+						</div>
+						<div>
+							달성 모금 금액 <input type="text" class="form-control"
+								placeholder="Current Amount raised">
+						</div>
+						<div>
+							참여인원 <input type="text" class="form-control"
+								placeholder="participants">
+						</div>
+						<div>
+							<span>전시일자 <input type="text" placeholder="YYYY-MM-DD"
+								class="form-control">
+							</span>
+						</div>
+					</div>
+					<div class="sidebar-box ftco-animate">
+						<div class="categories">
+							<li><div>펀딩 기간</div>
+								<div class="row">
+
+									<input type="text" placeholder="Start Date"
+										style="width: 160px; position: relative; left: 15px;">
+									<input type="text" placeholder="End Date"
+										style="width: 160px; position: relative; right: 0px;">
+								</div></li>
+							<li>
+								<form>
+									<select class="cb-select-product">
+										<option value="none">========= 상품 선택 =========</option>
+										<option value="">개냥이 굿즈
+											<가격></option>
+										<option value="">개냥이 부채 <5000원></option>
+										<option value="">개냥이 간식 <20000원></option>
+										<option value="">개냥이 장난감 <32000원></option>
+									</select>
+								</form>
+
+							</li>
+							<li>
+								<div>
+									<h3>펀딩이 종료되었습니다.</h3>
+								</div>
+						</div>
+
+						</li>
+
+
+
+						<div class="row">
+							<span style="margin: 0 10px 2px 15px; color: white;"><a
+								class="btn btn-secondary d-block px-2 py-3">Funding was
+									expired</a></span>
+						</div>
+
+
+					</div>
+				</div>
+
+
+			</div>
+
+		</div>
+		</div>
+	</section>
+	<!-- .section -->
+	<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

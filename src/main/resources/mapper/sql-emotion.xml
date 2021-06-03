@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pearl.mapper.EmotionMapper">
+	
+	<insert id="emotionInsert">
+		insert into emotion values(emotion_seq.nextval, #{boardNum}, #{memNum},#{emoExpress})
+	</insert>
+	
+	<select id="getEmo" resultType="com.pearl.domain.EmotionVO">
+		select * from emotion where boardNum=#{boardNum} and memNum=#{memNum}
+	</select>
+	
+	<update id="updateEmo">
+		update emotion set emoExpress=#{emoExpress} where boardNum=#{boardNum} and memNum=#{memNum}
+	</update>
+	
+	<select id="emoCount" resultType="com.pearl.domain.EmotionVO">
+		select emoexpress, count(*) emoCount from emotion where boardNum=#{boardNum} group by emoexpress
+	</select>
+	
+</mapper>

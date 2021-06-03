@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+
+	<header th:replace="fragments/header :: header"> </header>
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="ftco-section ftco-degree-bg">
+		<div class="container">
+			<form th:action="@{getPay}" method="POST" id="itemSubmit">
+				<div class="row">
+					<div class="col-lg-8 ftco-animate">
+						<div class="form-group">
+							<input type="text" th:value="${detail.fundTitle}"
+								class="form-control" name="fundTitle" readonly>
+						</div>
+						<p>
+							<img th:src="@{'/gallery/display?fileName='+${detail.pic.picPath}+'/'+${detail.pic.picUuid}+'_'+${detail.pic.picName}+'.'+${detail.pic.picTail}}" 
+								th:if="${detail.pic} ne null" alt="" class="img-fluid">
+						</p>
+						<div class="sidebar-box ftco-animate">
+							<h3>Introduce</h3>
+							<p th:text="${detail.fundIntro}" name="fundIntro"></p>
+						</div>
+					</div>
+					<!-- .col-md-8 -->
+
+					<div class="col-lg-4 sidebar pl-lg-5 ftco-animate">
+						<div class="sidebar-box">
+							<div style="margin: 0px 7px 7px 0px;">
+								<img th:src="@{'/gallery/display?fileName='+${artist.profile.picPath}+'/'+${artist.profile.picUuid}+'_'+${artist.profile.picName}+'.'+${artist.profile.picTail}}" 
+                					th:if="${artist.profile}!=null" alt="Image placeholder"
+									style="width: 40px; height: 40px; border-radius: 20px;">
+								<img th:src="@{/images/aboutpearl.jpg}" 
+                					th:unless="${artist.profile}!=null" alt="Image placeholder"
+									style="width: 40px; height: 40px; border-radius: 20px;">
+								<span th:text="${artist.memName}">작가명</span><span>&nbsp;&nbsp;작가님 펀딩 </span> <span
+									class="tagcloud"> <span> <a
+										class="tag-cloud-link"
+										style="background-color: #19a2b8; color: white;">Proceeding</a>
+								</span>
+								</span>
+
+
+							</div>
+
+							<div class="form-group">
+								<label>목표 금액</label>
+								<div>
+									<div th:text="${#numbers.formatInteger(detail.fundMoney,3,'COMMA')+'원'}" class="form-control"></div>
+								</div>
+							</div>
+							<div>
+								<label>달성률</label>
+								<div text="100%" th:text="${#numbers.formatDecimal(detail.total*1.0/detail.fundMoney*100,3,2)+'%'}" class="form-control"></div>
+							</div>
+							<div>
+								<label>현재 모금액</label>
+								<div th:text="${#numbers.formatInteger(detail.total,3,'COMMA')+'원'}" class="form-control"></div>
+							</div>
+							<div>
+								<label>참여인원</label>
+								<div th:text="${detail.attend+'명'}" class="form-control"></div>
+							</div>
+							<div>
+								<label>전시일자</label> <span
+									th:text="${#dates.format(detail.fundDday,'yyyy-MM-dd')}"
+									class="form-control"> </span>
+							</div>
+						</div>
+
+						<div class="sidebar-box ftco-animate">
+							<div class="categories">
+								<li><div>펀딩 기간</div>
+									<div class="row">
+										<div
+											th:text="${#dates.format(detail.fundStartDate,'yyyy-MM-dd')}"
+											style="width: 160px; position: relative; left: 15px;"></div>
+										<div
+											th:text="${#dates.format(detail.fundEndDate,'yyyy-MM-dd')}"
+											style="width: 160px; position: relative; right: 0px;"></div>
+									</div></li>
+								<div>
+									<select id="comboItem" name="comboItem" onchange="selectItem()">
+										<option value="nothing">========= 상품 선택 =========</option>
+										<option th:each="reward : ${rewardList}"
+											th:text="${reward.rwrdName + '(' + reward.rwrdPrice + '원)' } "></option>
+									</select>
+								</div>
+
+								<div>
+
+									<h5>선택한 상품</h5>
+									<div id="attach-item"></div>
+
+								</div>
+
+
+
+								<div style="margin: 0 0 15px 0;">
+									<h5 style="float: left; margin: 10px 0 0 0;">Total</h5>
+									<input type="text" id="tPrice" class="form-control"
+										name="rwrdTotal" readonly
+										style="float: left; margin: 0 0 12px 0;">
+								</div>
+
+								<input type="hidden" name="fundNum" th:value="${detail.fundNum}">
+								<input type="hidden" name="itemList" id="itemList">
+								<input type="hidden" name="memNum" th:value="${artist.memNum}">
+								<input type="hidden" name="memEmail" th:value="${artist.memEmail}">
+
+
+							</div>
+						</div>
+						<div class="row">
+							<input type="submit" id="funding" form="itemSubmit"
+								style="margin-right: 5px; "
+								th:if="${#authentication.name}!=${artist.memEmail}"
+								value="Attend Funding" class="btn btn-info d-block px-2 py-3">
+							<input type="button" id="update" value="Update"
+								style="margin-right: 5px;" 
+								th:if="${#authentication.name}==${artist.memEmail}"
+								th:onclick="|location.href='@{modify(fundNum=${detail.fundNum},memEmail=${artist.memEmail})}'|"
+								class="btn btn-primary d-block px-2 py-3" >
+							<input type="button" id="delete" value="Delete"
+								th:if="${#authentication.name}==${artist.memEmail}"
+								onclick="deleteFund()"
+								class="btn btn-danger d-block px-2 py-3">
+							
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+	<!-- .section -->
+
+	<script>
+		var count = 0;
+		var countItem = 0;
+		var total = 0;
+		var basic = 1;
+
+		
+		function selectItem() {
+			var item = $("#comboItem option:selected").text();
+			var choice = $("#comboItem option:selected").val();
+			console.log("selected : "+choice);
+			if(choice=='nothing') return;
+			$("#attach-item")
+					.prepend(
+							'<li id="select-item'+count+'"><div class="row" style="position: relative; left: 20px">'
+									+ '<div style="width: 60%;"><input type="text" id="selectProduct'+count
+					+'" name="rwvo['+count+'].rwrdName'
+					+'" style="float: left; margin: 0 10px 0 0;" value="'+item+'" readonly>'
+
+									+ '</div><div>'
+									+ '<div class="tagcloud" style="float: left;"><a class="tag-cloud-link" onclick="cntDown('
+									+ count
+									+ ')">-</a>'
+									+ '</div><div id="cntItem'+count+'"  style="text-size: 15px; float: left; padding: 0 4px 0 0;">1</div>'
+									+ '<div class="tagcloud" style="float: left;"><a class="tag-cloud-link" onclick="cntUp('
+									+ count
+									+ ')">+</a>'
+									+ '</div><div class="tagcloud" style="float: left;"><a class="tag-cloud-link" onclick="deleteItem('
+									+ count
+									+ ')">del</a>'
+									+ '</div><div id=subTotal'+count+'></div></div></div>'
+									+ '<input type ="hidden" id = "hidden'+count+'" name = "rwvo['+count+'].rwrdCnt" value=1></li>');
+
+			var id2 = '#selectProduct' + count;
+			var name = $(id2).val();
+			var index = name.indexOf('(');
+			var index2 = name.indexOf('원');
+			var priceFind = name.substring(index + 1, index2).trim();
+			var price = parseInt(priceFind, 10);
+
+			var subTotal = '#subTotal' + count;
+			$(subTotal).text(price);
+			count++;
+			countItem++;
+			totalPrice();
+		}
+
+		function deleteItem(count) {
+			var id = '#select-item' + count;
+			$(id).remove();
+			totalPrice();
+			countItem--;
+		}
+
+		function cntUp(count) {
+			var id = '#cntItem' + count;
+			var stat = $(id).text();
+			var cnt = parseInt(stat, 10);
+			cnt++;
+			$(id).text(cnt);
+			$('#hidden' + count).val(cnt);
+			console.log("hidden count: " + $('#hidden' + count).val());
+			//
+			var id2 = '#selectProduct' + count;
+			var name = $(id2).val();
+			var index = name.indexOf('(');
+			var index2 = name.indexOf('원');
+			var priceFind = name.substring(index + 1, index2).trim();
+			var price = parseInt(priceFind, 10);
+
+			var subTotal = '#subTotal' + count;
+			var subSum = price * cnt;
+			$(subTotal).text(subSum);
+
+			totalPrice();
+
+		}
+
+		function cntDown(count) {
+			var id = '#cntItem' + count;
+			var stat = $(id).text();
+			var cnt = parseInt(stat, 10);
+			if (cnt > 1) {
+				cnt--;
+			}
+			$(id).text(cnt);
+			$('#hidden' + count).val(cnt);
+
+			//
+			var id2 = '#selectProduct' + count;
+			var name = $(id2).val();
+			var index = name.indexOf('(');
+			var index2 = name.indexOf('원');
+			var priceFind = name.substring(index + 1, index2).trim();
+			var price = parseInt(priceFind, 10);
+
+			var subTotal = '#subTotal' + count;
+			var subSum = price * cnt;
+			$(subTotal).text(subSum);
+
+			totalPrice();
+		}
+
+		function totalPrice() {
+			total = 0;
+			for (var i = 0; i < count; i++) {
+				console.log("서브토탈" + i + " : " + $('#subTotal' + i).text());
+				total += parseInt($('#subTotal' + i).text() == '' ? 0 : $(
+						'#subTotal' + i).text());
+			}
+			;
+			console.log("총합 : " + total);
+			$('#tPrice').val(total);
+		}
+
+		$('#funding').click(function(){
+			event.preventDefault();
+			if(total<=0){
+				alert('상품을 먼저 선택해주세요.');
+				return;
+			}
+			$('#itemSubmit').submit();
+		});
+		
+		function deleteFund() {
+			$('#itemSubmit').attr("action","/fund/delete").submit();
+		}
+	</script>
+	<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

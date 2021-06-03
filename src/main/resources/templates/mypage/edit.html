@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head th:insert="/fragments/head.html::head">
+</head>
+<style>
+
+.pic2 {
+	margin-left: 33em;
+}
+
+.nickname2 {
+/* 	position: absolute; */
+	margin-left: 1em;
+	font-size: 3em;
+	font-weight: bold;
+	text-align: center;
+/* 	top: 70%; */
+}
+
+.row{
+	borderwidth : 1px;
+	
+}
+
+#row2{
+	margin:12em;
+	} 
+
+.check2 {
+	position: absolute;
+	margin-left: 5em;
+	font-size: 1.5em;
+	top: 90%;
+	color: red;
+	text-decoration: underline;
+}
+
+#appointment2 {
+	left: 50%
+}
+
+</style>
+<body>
+
+	<header th:replace="fragments/header :: header"> </header>
+
+	<section th:replace="/fragments/section.html::section"></section>
+<!-- 	<section class="ftco-appointment ftco-section ftco-no-pt ftco-no-pb "> -->
+	<section>
+	<nav th:replace="mypage/common :: nav"></nav>
+	
+
+		<div class="overlay"></div>
+		<div class="container"></div>
+		<div class="row" id="row2">
+			<div class="row d-md-flex justify-content-center">
+				<div class="col-lg-6">
+				<label for="customFile"><img style="margin-left:0;" th:if="${meminfo.profile}!=null" alt="프로필 사진이 없습니다." 
+				th:src="@{'/gallery/display?fileName='+${meminfo.profile.picPath}+'/'+${meminfo.profile.picUuid}+'_'+${meminfo.profile.picName}+'.'+${meminfo.profile.picTail}}" id="profileImg" width="300" height="300"/>
+				<img style="margin-left:0;" th:unless="${meminfo.profile}!=null" alt="프로필 사진이 없습니다." 
+				src="http://placehold.it/300x300" id="profileImg" width="300" height="300"/></label>
+						<p class="nickname2" th:text="${meminfo.memName}"></p><hr>
+					
+
+					<form th:action="@{|/mypage/editsend?${_csrf.parameterName}=${_csrf.token}|}" class="appointment"
+						id="appointment2" method="post" enctype="multipart/form-data">
+						<div class="form-group row">
+		            <div class="col-sm-10">
+		                <div class="custom-file" id="inputFile">
+		                    <input name="file" type="file" class="custom-file-input" id="customFile">
+		                    <label class="custom-file-label" for="customFile">프로필 사진 선택</label>
+		                </div>
+		            </div>
+	        	</div><br><br>
+						<input type="hidden" th:value="${meminfo.memNum}" name="memNum">
+						<div class="row">
+
+							<div class="col-md-6">
+								<div class="form-group" style="border-color: black">
+									<label class="label">이메일</label> 
+									<input type="text" class="form-control" id="memEmail" name="memEmail"
+										th:value="${meminfo.memEmail}" style="border-color: black"
+										readonly>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="label" for="memName">닉네임</label> 
+									<input type="text" class="form-control" id="memName" name="memName" maxlength="12" 
+										th:value="${meminfo.memName}">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="label" for="PhoneNumber">전화 번호</label> 
+									<input type="text" class="form-control" id="PhoneNumber"
+										name="memPhone" placeholder="PhoneNumber"
+										th:value="${meminfo.memPhone}">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="label" for="Password">비밀번호</label> 
+									<input type="password" class="form-control" id="Password"
+										name="memPass" placeholder="Password" th:value="${meminfo.memPass}">
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<div class="form-field">
+										<div class="select-wrap">
+											<div class="icon">
+												<span class="fa fa-chevron-down"></span>
+											</div>
+											<select name="memBank" id="memBank" th:field="${meminfo.memBank}"
+												th:value="${meminfo.memBank}" class="form-control">
+												<option th:value="null" th:text="은행을선택해주세요"></option>
+												<option th:value="'국민은행'" th:text="국민은행"></option>
+												<option th:value="'신한은행'" th:text="신한은행"></option>
+												<option th:value="'농협은행'" th:text="농협은행"></option>
+												<option th:value="'우리은행'" th:text="우리은행"></option>
+												<option th:value="'하나은행'" th:text="하나은행"></option>
+												<option th:value="'카카오뱅크'" th:text="카카오뱅크"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="label" for="memAccount">계좌번호</label> <input
+										type="text" class="form-control" name="memAccount"
+										id="memAccount" placeholder="Account"
+										th:value="${meminfo.memAccount}">
+								</div>
+							</div>
+							<hr>
+							<hr>
+							<div class="col-md-12">
+								<div class="form-group">
+									<input type="submit" id="edit_btn" value="변경하기"
+										class="btn btn-primary py-3 px-4">
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<input type="button" id="remove_btn" value="탈퇴하기" style="color:red;" class="btn py-3 ">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</section>
+
+	<footer th:replace="fragments/footer :: footer"> </footer>
+	<script th:inline="javascript">
+		 /*<![CDATA[*/
+		 var originName = [[${meminfo.memName}]];  
+		 var memNum = [[${meminfo.memNum}]];
+		 /*]]*/
+	 $( document ).ready( function() {   
+		 $("#remove_btn").click(function(e){
+	 			e.preventDefault();
+		    	removebtn();  
+		 });
+		 
+		 function removebtn () {
+			if(confirm("정말 탈퇴 하시겠습니까?") == true){
+				alert("탈퇴 되었습니다");
+				window.location.href='/mypage/delete?memNum='+memNum; 
+			}else {
+				return;
+			}
+		 }
+	 	});
+		$(".custom-file-input").change(function() {
+			var file = $(this)[0].files;
+			var fileName = $(this).val();
+			console.log(""+fileName);
+			var fileExt = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+			console.log(""+fileExt);
+			console.log(""+file[0].size);
+			if(fileExt!="jpg"&&fileExt!="jpeg"&&fileExt!="gif"&&fileExt!="png"&&fileExt!="bmp"){
+				alert("이미지 파일이 아닙니다");
+				$(this).val("");
+				return;
+			} else if(file[0].size >= 5242880){
+				alert("5MB이하의 이미지만 사용가능합니다");
+				return false;
+			}
+			
+			if(this.files&& this.files[0]){
+				var reader = new FileReader;
+				reader.onload = function(data){
+					$('#profileImg').attr("src", data.target.result).width(400);    
+				}
+				reader.readAsDataURL(this.files[0]);
+			}
+		  var fileName = $(this).val().split("\\").pop();
+		  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+		});
+		
+			
+		 /*<![CDATA[*/
+			var result = /*[[${result}]]*/ 
+		/*]]*/
+			if(result=="EditFail"){
+				   alert("이미 존재하는 닉네임입니다.");
+				}	    			
+    		
+		  	$("#edit_btn").click(function(e){
+		    		e.preventDefault();
+		    		editsomething();
+		    	});
+		 function editsomething() {
+		
+			 	var specialCheck = /[~!@#$%^&*()_+|<>?:{}]/;
+			 	var ckname = $('#memName').val();	 
+	    			if(ckname=="") {
+	    				alert("닉네임을 입력해주세요");
+	    				$('#memName').focus();
+	    				return false;
+	    			} else if(ckname.search(/\s/) != -1) {
+	    				alert("닉네임을 공백없이 입력해주세요");
+	    				$('#memName').focus();
+	    				return false;
+	    			} else if (specialCheck.test(ckname)) {
+	    				alert("닉네임은 특수문자를 포함 할 수 없습니다."); 
+	    				$('#memName').focus();
+	    				return false;
+	    			}		
+	    			 var regExp = /^[0-9]*$/;
+		    		 var cknumber = $('#PhoneNumber').val();	 
+		    			 if(cknumber=="") {
+		    				alert("전화번호를 입력해주세요");
+		    				$('#PhoneNumber').focus();
+		    				return false;
+		    			}   else if( !regExp.test(cknumber)) {
+		    			     alert("-를 제외한 숫자만 입력해주세요");
+		    			     $('#PhoneNumber').val('');
+		    			     $('#PhoneNumber').focus();
+		    				return false;  
+		    			}  
+		    			 
+		    		 var psRegex = /^[a-zA-Z0-9!@#$%^&*()?_~]{8,20}$/	 
+		    		 var ckps = $('#Password').val();
+		    		 	if(ckps!=""&& !psRegex.test(ckps)) {
+		    			     alert("비밀번호는 숫자, 영문, 특수문자(!@$%^&*?_~ 만 허용) 조합으로 8~20자리를 사용해야 합니다.");
+		    			     $('#Password').focus();
+		    				return false;  
+		    		 	}  
+		    		 	
+		    		var ckbank = $('#memBank').val();	 
+				    var ckaccount = $('#memAccount').val();
+				    console.log(ckbank, ckaccount);
+				    	if((ckbank == null||ckbank == "") && (ckaccount!= "")) {
+				    	alert("은행을 입력해주세요");
+				    	$('#memBank').focus();
+				    	return false;
+				    }  else if((ckbank != "") && (ckaccount == null||ckaccount== "")) {
+				    	alert("계좌번호를 입력해주세요");
+				    	$('#memAccount').focus();
+				    	return false;
+				    } if( !regExp.test(ckaccount)) {
+				    	alert("-를 제외한 숫자만 입력해주세요");
+				    	$('#memAccount').focus();
+				    	return;
+				    }
+// 				  console.log("origin="+originName+"//ckname="+ckname);
+// 				  if(originName==ckname){
+// 					  $('#memName').val('');
+// 				  }
+	    		$("#appointment2").submit();
+	    	 }
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+	<section th:replace="/fragments/section.html::section"></section>
+	
+	<section class="hero-wrap hero-wrap-2" style="display: inline-block;">
+		<div class="row no-gutters">
+			<div class="col-md-7" style="margin: auto;">
+				<div class="contact-wrap w-100 p-md-5 p-4">
+					<div>
+						<h3 class="mb-4" style="display: inline-block;">공지 사항</h3>
+						<input type="submit" value="수정하기" id="editBtn"
+							sec:authorize="hasRole('ROLE_ADMIN')"
+							class="btn btn-primary" style="float: right;"
+							th:onclick="location.href='/notice/modify?boardNum=[[${notice.boardNum}]]'">
+					</div>
+					<hr>
+					<div class="blog-entry align-self-stretch">
+						<div class="text p-4">
+							<h2 class="mb-4">[[${notice.boardTitle}]]</h2>
+							<div class="meta mb-2">
+								<div style="float: right">[[${notice.boardDate}]]</div>
+							</div>
+							<hr>
+							<br>
+							<h3 class="heading">
+								<p>[[${notice.boardContent}]]</p>
+							</h3>
+						</div>
+					</div>
+					<div>
+						<a href="/notice/list"
+							class="btn-custom d-flex" style="margin-left: 0px"><span
+							class="fa fa-chevron-left"> </span><i class="sr-only">Read
+								more</i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer th:replace="fragments/footer :: footer"> </footer>
+	</section>
+</body>
+<script>
+	$(document).ready(function() {
+	});
+</script>
+
+</html>

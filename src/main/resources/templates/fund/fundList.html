@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+
+	<header th:replace="fragments/header :: header"> </header>
+
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="ftco-section bg-light">
+		<div class="container">
+			<div class="row justify-content-center pb-5 mb-3">
+
+				<div class="col-md-7 heading-section text-center ftco-animate">
+					<span style="font-size: 22px;"><a th:href="|@{fundList}${vo.makeQueryString(1)}&&fundNow=done|">종료된 펀딩</a></span> <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<span style="font-size: 22px;"><a th:href="|@{fundList}${vo.makeQueryString(1)}&&&fundNow=now|">진행중 펀딩</a></span> <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<span style="font-size: 22px;"><a th:href="|@{fundList}${vo.makeQueryString(1)}&&&fundNow=yet|">예정된 펀딩</a></span>
+				</div>
+
+				<div style="float: right;">
+				<input type="button" value="Start Funding" id="writeBtn" style="float: right;"
+					class="btn btn-info"
+					onclick="location.href='/fund/write'">
+				</div>
+			</div>
+
+<!-- -----------------------검색창 ---------------------------------->
+			<div style="margin: 0 0 40px 0; float: center;" align="center">
+				
+					<form id="searchForm" th:action="@{/fund/fundList}" method="get" class="search-form">
+						<select name="searchType" style="width: 170px; height: 40px;">
+							<option value="" th:selected="${#strings.isEmpty( vo.searchType )}">==== 전체 검색 ====</option>
+							<option value="writer" th:selected="${#strings.equals( vo.searchType, 'writer' )}">작가 이름</option>
+							<option value="title" th:selected="${#strings.equals( vo.searchType, 'title' )}">펀딩 제목</option>
+						</select>
+						<input type="text"placeholder="Search"	style="width: 400px; height: 40px;" 
+							name="searchKeyword" id="keyword" th:value="${vo.searchKeyword}">
+						<input type="hidden" name="currentPage" value="1">
+						<input type="hidden" name="amount" th:value="${vo.amount}">
+						<input type="hidden" name="pageAmount" th:value="${vo.pageAmount}">
+						<button
+							style="width: 100px; height: 40px; 
+							background-color: #007bff; color: white; 
+							border-radius: 4px" id="srchBtn">
+							<span><b>SEARCH</b></span>
+						</button>
+						
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			$("#srchBtn").click(function(e){
+				e.preventDefault();
+				var form = $('#searchForm');
+				searchBoard(form);
+			});
+			
+			function searchBoard(form) {
+				/*[- 드롭다운이 아닌 메인 검색 키워드로 검색했을 때 -]*/
+					var searchKeyword = $("#keyword");
+					var searchType = $('input[name=searchType]').val();
+					if(searchType !== ''&& searchType != null&&searchKeyword.val() === '') {
+						console.log(searchType);
+						alert("키워드를 입력해 주세요.");
+						searchKeyword.focus();
+						return false;
+					}
+					form.submit();
+			}
+			
+// 			function searchType(item){
+// 		 		$('#dropdownMenuButton').html($(item).html());
+// 		 		console.log($(item).html());
+// 		 		if($(item).html()=='전체 보기') $('#searchForm #keyword').val('');
+// 		 		$('#searchForm input[name=searchType]').val($(item).attr('data-srch'));
+// 		 		console.log($('#searchForm input[name=searchType]').val());
+// 		 	}
+
+			/*]]>*/
+		</script>
+	</th:block>
+					</form>
+				
+			</div>
+
+<!-- -----------------------펀드 게시물 ---------------------------------->
+			<div class="row">
+				<div class="col-md-4 ftco-animate" th:each="f : ${list}" th:object="${f.pic}">
+					<div class="block-7">
+						<div class="img" th:if="${f.pic} ne null"
+							th:style="'cursor:pointer; background-image: url(/gallery/display?fileName='+*{picPath}+'/'+*{picUuid}+'_'+*{picName}+'.'+*{picTail}+');'"
+							th:onclick="'location.href=\''+@{'get'+${vo.makeQueryString(vo.currentPage)}+'&&fundNum='+${f.fundNum}}+'\''"></div>
+						<div class="img" th:unless="${f.pic} ne null"
+							style="cursor:pointer;background-image: url(http://placehold.it/300x200);"
+							th:onclick="'location.href=\''+@{'get'+${vo.makeQueryString(vo.currentPage)}+'&&fundNum='+${f.fundNum}}+'\''"></div>
+						<div class="text-center p-4">
+						<a th:href="|@{get}${vo.makeQueryString(vo.currentPage)}&&fundNum=${f.fundNum}|">
+							<span class="excerpt d-block" th:text="${f.fundTitle}" style="font-size:28px;"></span></a>
+							<span class="price">
+								<span th:text="${#numbers.formatInteger(f.fundMoney,3,'COMMA')}" style="font-size:24px;"></span> <sub>won</sub></span>
+
+							<ul class="pricing-text mb-5">
+								<li><label>모금 시작일  : </label><span th:text="${#dates.format(f.fundStartDate,'yyyy-MM-dd')}"></span></li>
+								<li><label>모금 마감일  : </label><span th:text="${#dates.format(f.fundEndDate,'yyyy-MM-dd')}"></span></li>
+								<li><label>전시일  : </label><span th:text="${#dates.format(f.fundDday,'yyyy-MM-dd')}">전시일</span></li>
+							</ul>
+							<a th:href="@{/mypage(memNum=${f.memNum})}" style="color:black;"><span th:text="${f.memName + ' 작가님'}"></span></a>
+<!-- 							<div class="excerpt d-block" th:onclick="location.href='/mypage?memNum=[[${f.memNum}]]'"  -->
+<!-- 								th:text="${f.memName }" style="cursor:pointer;font-size:15px; color:gray;"></div> -->
+<!-- 							<div>작가님</div> -->
+							<a th:href="@{get(fundNum=${f.fundNum})}"
+							class="btn btn-primary d-block px-2 py-3">Join
+								Funding</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="row mt-5">
+          <div class="col text-center">
+            <div th:replace="fragments/pagination :: pagination"></div>
+          </div>
+        </div>
+		</div>
+	</section>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		var fundNow = '&fundNow='+([[${vo.fundNow}]]==null?'':[[${vo.fundNow}]]);
+		var memNum = '&memNum='+([[${memNum}]]==null?'':[[${memNum}]]);
+		function movePage(uri, queryString) {
+	
+			location.href = uri + queryString + fundNow + memNum;
+		}
+
+	/*]]>*/
+</script>
+	<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

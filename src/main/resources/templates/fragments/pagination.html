@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="pagination" class="block-27" th:if="${vo!=null and vo.pagiInfo.totalCount>0}"
+	th:object="${vo.pagiInfo}" th:with="info=${vo.pagiInfo}">
+	<ul>
+		<li th:if="*{hasPreviousPage == true}"
+			th:onclick="movePage([[${#request.requestURI}]],[[${vo.makeQueryString(1)}]])"><a
+			href="javascript:void(0)" style="background-color:dark;">&laquo;</a></li>
+		<li th:if="*{hasPreviousPage == true}"
+			th:onclick="movePage([[${#request.requestURI}]],[[${vo.makeQueryString(info.firstPage - 1)}]])"><a
+			href="javascript:void(0)">&lsaquo;</a></li>
+		<li th:each="pageNo : *{#numbers.sequence(firstPage, lastPage)}"
+			th:class="${pageNo == vo.currentPage}?'active'"><a
+			href="javascript:void(0)" th:text="${pageNo}" style="background:dark;"
+			th:onclick="movePage([[${#request.requestURI}]],[[${vo.makeQueryString(pageNo)}]])">page</a></li>
+		<li th:if="*{hasNextPage == true}"
+			th:onclick="movePage([[${#request.requestURI}]],[[${vo.makeQueryString(info.lastPage + 1)}]])"><a
+			href="javascript:void(0)">&rsaquo;</a></li>
+		<li th:if="*{hasNextPage == true}"
+			th:onclick="movePage([[${#request.requestURI}]],[[${vo.makeQueryString(info.totalPageCount)}]])"><a
+			href="javascript:void(0)">&raquo;</a></li>
+	</ul>
+</div>
+
+<form th:fragment="search" id="searchForm" th:action="@{/gallery/list}" method="get" class="search-form">
+	<div class="input-group">
+		<button class="btn btn-dark dropdown-toggle" type="button"
+			id="dropdownMenuButton" data-toggle="dropdown"
+			aria-haspopup="true" aria-expanded="false" style="width: 200px;">전체
+			보기</button>
+		<input type="hidden" name="currentPage" value="1">
+		<input type="hidden" name="amount" th:value="${vo.amount}">
+		<input type="hidden" name="pageAmount" th:value="${vo.pageAmount}">
+		<input type="hidden" name="searchType" th:value="${vo.searchType}">
+		<div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
+			<span class="dropdown-item" onclick="searchType(this)" data-srch="">전체 보기</span>
+			<span class="dropdown-item" onclick="searchType(this)" data-srch="title">제목</span> 
+			<span class="dropdown-item" onclick="searchType(this)" data-srch="content">내용</span>
+			<span class="dropdown-item" onclick="searchType(this)" data-srch="writer">작성자</span> 
+		</div>
+
+		<input type="text" class="form-control" placeholder="Search..." style="margin-left: 10px; margin-right: 10px; width:500px"
+			name="searchKeyword" id="keyword" th:value="${vo.searchKeyword}">
+		<div class="form-group-append">
+			<button class="btn btn-dark" id="srchBtn">Search</button>
+		</div>
+	</div>
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+
+			$(document).ready(function(){
+		   		var type = [[${vo.searchType ==''?'':vo.searchType}]];
+		   		if(type == 'title'){
+		   			$('#dropdownMenuButton').html('제목');
+		   		} else if(type == 'content') {
+		   			$('#dropdownMenuButton').html('내용');
+		   		} else if(type == 'writer') {
+		   			$('#dropdownMenuButton').html('작성자');
+		   		} else {
+		   			$('#dropdownMenuButton').html('전체 보기');
+//    			$('#searchForm #keyword').val('');
+		   		}
+			});
+			$("#srchBtn").click(function(e){
+				e.preventDefault();
+				var form = $('#searchForm');
+				searchBoard(form);
+			});
+			
+			function searchBoard(form) {
+				/*[- 드롭다운이 아닌 메인 검색 키워드로 검색했을 때 -]*/
+					var searchKeyword = $("#keyword");
+					var searchType = $('input[name=searchType]').val();
+					if(searchType !== ''&& searchType != null&&searchKeyword.val() === '') {
+						console.log(searchType);
+						alert("키워드를 입력해 주세요.");
+						searchKeyword.focus();
+						return false;
+					}
+					form.submit();
+			}
+			
+			function searchType(item){
+		 		$('#dropdownMenuButton').html($(item).html());
+		 		console.log($(item).html());
+		 		if($(item).html()=='전체 보기') $('#searchForm #keyword').val('');
+		 		$('#searchForm input[name=searchType]').val($(item).attr('data-srch'));
+		 		console.log($('#searchForm input[name=searchType]').val());
+		 	}
+
+			/*]]>*/
+		</script>
+	</th:block>
+</form>
+
+</html>

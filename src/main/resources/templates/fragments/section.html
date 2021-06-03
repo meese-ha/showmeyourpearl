@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<section class="hero-wrap hero-wrap-2" th:style="'background-image: url('+@{/images/jinjur.png}+');'" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-end">
+      <div class="col-md-9 ftco-animate pb-5">
+      	<p class="breadcrumbs mb-2" id="CateP">
+      	<span class="mr-2"><a href="/">Home <i class="ion-ios-arrow-forward"></i></a></span> 
+      	<span id="Category"><i class="ion-ios-arrow-forward"></i></span>
+      	</p>
+        <h1 class="mb-0 bread" id="CateH"></h1>
+      </div>
+    </div>
+  </div>
+
+  <script>
+		$(document).ready(function() {
+			var url = document.location.href.split('/');
+			if(url[3]=='gallery') {
+				if(url[4]=='list'||url[4]=='list#'||url[4].split('?')[0]=='list'){
+					$('#Category').html('Gallery');
+					$('#CateH').html('Gallery');
+				}else if(url[4].split('?')[0]=='get'){
+					var str = '<a href="/gallery/list">Gallery<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Single<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Gallery Single');
+				}else if(url[4].split('?')[0]=='write'){
+					var str = '<a href="/gallery/list">Gallery<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Write<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Gallery Write');
+				}else if(url[4].split('?')[0]=='modify'){
+					var str = '<a href="/gallery/list">Gallery<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Modify<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Gallery Modify');
+				}
+			}else if(url[3]=='notice') {
+				if(url[4]=='list'||url[4]=='list#'||url[4].split('?')[0]=='list'){
+					$('#Category').html('Notice');
+					$('#CateH').html('Notice');
+				}else if(url[4].split('?')[0]=='read'){
+					var str = '<a href="/notice/list">Notice<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Single<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Notice Single');
+				}else if(url[4].split('?')[0]=='write'){
+					var str = '<a href="/notice/list">Notice<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Write<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Notice Write');
+				}else if(url[4].split('?')[0]=='modify'){
+					var str = '<a href="/notice/list">Notice<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Update<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Notice Update');
+				}
+			}else if(url[3]=='fund') {
+				if(url[4]=='fundList'||url[4]=='fundList#'||url[4].split('?')[0]=='fundList'){
+					$('#Category').html('Funding');
+					$('#CateH').html('Funding');
+				}else if(url[4].split('?')[0]=='get'){
+					var str = '<a href="/fund/fundList">Funding<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Single<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Funding Single');
+				}else if(url[4].split('?')[0]=='write'){
+					var str = '<a href="/fund/fundList">Funding<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Write<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Funding Write');
+				}else if(url[4].split('?')[0]=='modify'){
+					var str = '<a href="/fund/fundList">Funding<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Update<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Funding Update');
+				}else if(url[4].split('?')[0]=='getPay'){
+					var str = '<a href="/fund/fundList">Funding<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Payment<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('Funding Payment');
+				}
+			}else if(url[3]=='mypage'||url[3].split('?')[0]=='mypage') {
+				if(url[4]==null&&url[3].split('?')[0]=='mypage'){
+					console.log(url[3].split('?')[0]);
+					$('#Category').html('MyPage');
+					$('#CateH').html('MyPage');
+				}else if(url[4].split('?')[0]=='edit'){
+					var str = '<a href="/mypage">MyPage<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>Edit<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('MyPage Edit');
+				}else if(url[4].split('?')[0]=='myfund'){
+					var str = '<a href="/mypage">MyPage<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>MyFund<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('MyFund');
+				}else if(url[4].split('?')[0]=='donafund'){
+					var str = '<a href="/mypage">MyPage<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>MyDonation<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('MyDonation');
+				}else if(url[4].split('?')[0]=='subinfo'){
+					var str = '<a href="/mypage">MyPage<i class="ion-ios-arrow-forward"></i></a>';
+					var str2 = '<span>MySubscriber<i class="ion-ios-arrow-forward"></i></span></p>';
+					$('#Category').attr("class","mr-2");
+					$('#Category').html(str);
+					$('#CateP').append(str2);
+					$('#CateH').html('MySubscriber');
+				}
+			}
+		});
+	</script>
+</section>
+</html>

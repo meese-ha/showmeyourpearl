@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+
+	<header th:replace="/fragments/header.html::header"></header>
+	<section th:replace="/fragments/section.html::section"></section>
+
+
+	<section class="ftco-section ftco-no-pt ftco-no-pb">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row no-gutters">
+				<div class="col-md-5 d-flex align-items-stretch">
+<!-- 					<div class="info-wrap w-100 p-5 img" id="uploadImg" -->
+<!-- 						th:style="'background-image: url('+@{/images/img.jpg}+');'"> -->
+<!--  						<input type="button" class="btn btn-primary" value="사진올리기" /> -->
+<!-- 					</div> -->
+						<div class="select_img"><img id="uploadImg" src="" /></div>
+				</div>
+				<div class="col-md-7">
+					<div class="contact-wrap w-100 p-md-5 p-4">
+						<h3 class="mb-4">새로운 사진 업로드</h3>
+						<form method="POST" th:action="@{|/gallery/register?${_csrf.parameterName}=${_csrf.token}|}"
+							id="writeForm" class="contactForm" enctype="multipart/form-data">
+							
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<input type="text" class="form-control" name="boardTitle"
+											id="boardTitle" placeholder="제목을 입력하세요">
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<textarea name="boardContent" class="form-control"
+											id="boardContent" cols="30" rows="10" placeholder="내용을 입력하세요"></textarea>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group row">
+					            <label for="inputFile" class="col-sm-2 col-form-label"><strong>첨부 파일</strong></label>
+					            <div class="col-sm-10">
+					                <div class="custom-file" id="inputFile">
+					                    <input name="file" type="file" class="custom-file-input" id="customFile" accept="image/*" value="">
+					                    <label class="custom-file-label" for="customFile">파일을 선택해 주세요.</label>
+					                </div>
+					            </div>
+				        	</div>
+   							</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<input type="submit" value="업로드" class="btn btn-primary">
+										<div class="submitting"></div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!-- .section -->
+	
+<script th:inline="javascript">
+	$( document ).ready( function() {
+		/*<![CDATA[*/
+		var result = /*[[${result}]]*/ 
+		/*]]*/
+		//console.log(result);
+		if(result=="fail"){
+    	alert("업로드에 실패하였습니다.");
+    	}
+	});
+	
+	$('input[type=submit]').click(function(){
+		event.preventDefault();		
+		if($('#boardTitle').val()==""){
+			alert('제목을 입력해주세요.');
+			$('#boardTitle').focus();
+			return;
+		}else if($('#boardContent').val()==""){
+			alert('내용을 입력해주세요.')
+			$('#boardContent').focus();
+			return;
+		}else if($('#customFile').val()==null||$('#customFile').val()==""){
+			alert('사진을 선택해주세요.')
+			return;
+		}
+		$('#writeForm').submit();
+	});
+		
+	function checkExtension(fileSize){
+		if(fileSize >= 5242880){
+			alert("파일 사이즈 초과");
+			return false;
+		}
+	return true;
+}
+	$(".custom-file-input").change(function() {
+		$(this).siblings(".custom-file-label").addClass("selected").html('파일을 선택해주세요.');
+		var file = $(this)[0].files;
+		var fileName = $(this).val();
+		console.log(""+fileName);
+		var fileExt = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+		console.log(""+fileExt);
+		console.log(""+file[0].size);
+		if(fileExt!="jpg"&&fileExt!="jpeg"&&fileExt!="gif"&&fileExt!="png"&&fileExt!="bmp"){
+			alert("이미지 파일이 아닙니다");
+			$(this).val("");
+			return;
+		} else if(file[0].size >= 5242880){
+			alert("5MB이하의 이미지만 사용가능합니다");
+			return false;
+		}
+		
+		if(this.files&& this.files[0]){
+			var reader = new FileReader;
+			reader.onload = function(data){
+				$('#uploadImg').attr("src", data.target.result).width(400);    
+			}
+			reader.readAsDataURL(this.files[0]);
+		}
+	  var fileName = $(this).val().split("\\").pop();
+	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+</script>
+
+	<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

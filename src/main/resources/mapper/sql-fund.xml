@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pearl.mapper.FundMapper">
+
+	<select id="getList" resultType="com.pearl.domain.FundVO">
+			select * from 
+			(select row_number() over(order by fundnum desc) rn, f.*, m.memname from fund f, member m 
+				where f.memnum=m.memnum and fundnum>0
+			<include refid="sql-search.searchFund" />		
+			) where rn between #{pagiInfo.firstRecordIndex}+1 and #{pagiInfo.lastRecordIndex}
+	</select>
+	
+	<select id="selectTotalCount" resultType="int">
+		select count(*) from Fund f, member m where f.memnum = m.memnum 
+		<include refid="sql-search.searchFund" />
+	</select>
+	
+	<select id="get" resultType="com.pearl.domain.FundVO">
+		select f.*,nvl(p.attend,0) attend,nvl(p.total,0) total 
+from Fund f 
+left join(select fundnum, count(*) attend,sum(paytotal) total from payment group by fundnum having fundnum=#{fundnum}) p on(f.fundnum=p.fundnum)
+where f.fundnum=#{fundnum}
+	</select>
+	
+	
+	<insert id="insert">
+	<selectKey keyProperty="fundNum" resultType="Long" order="BEFORE">
+		select fund_seq.nextval from dual
+	</selectKey>
+		insert into Fund(FundNum,memnum,fundstartdate,fundenddate,fundmoney,funddday,fundtitle,fundintro) 
+			values(#{fundNum},#{memNum},#{fundStartDate},#{fundEndDate},
+			#{fundMoney},#{fundDday},#{fundTitle},#{fundIntro})
+	</insert>
+	
+	<update id="update">
+		update Fund set 
+		fundtitle=#{fundTitle} ,fundintro=#{fundIntro} 
+		where FundNum=#{fundNum}
+	</update>
+	
+	
+	<delete id="delete">
+		delete from Fund where FundNum=#{fundNum}
+	</delete>
+	
+<!-- 	<insert id ="insertPic" parameterType="com.pearl.domain.PicDTO"> -->
+<!-- 	 insert all -->
+<!-- 	<foreach collection="list" item="item" separator=" "> -->
+<!-- 	<![CDATA[ -->
+<!-- 	into t_file -->
+<!-- 	(FUNDNUM, ORIGINAL_FILE_NAME, STORED_FILE_PATH, FILE_SIZE, CREATOR_ID, CREATED_DATETIME)  -->
+<!-- 	values  -->
+<!-- 	]]> -->
+		
+<!-- 			( -->
+<!-- 				#{item.fundNum},  -->
+<!-- 				#{item.originalFileName}, -->
+<!-- 				#{item.storedFilePath}, -->
+<!-- 				#{item.fileSize},  -->
+<!-- 				'admin',  -->
+<!-- 				sysdate -->
+<!-- 			) -->
+<!-- 		</foreach> -->
+<!-- 		select * from dual -->
+<!-- 	</insert> -->
+	
+<!-- 	<select id="getPicList" parameterType="Long" resultType="com.pearl.domain.PicDTO"> -->
+<!-- 	<![CDATA[ -->
+<!-- 	select  -->
+<!-- 		idx, FUNDNUM, ORIGINAL_FILE_NAME  -->
+<!-- 	from -->
+<!-- 		t_file -->
+<!-- 	where -->
+<!-- 		FundNum= #{fundNum} -->
+<!-- 	]]> -->
+<!-- 	</select> -->
+	
+ 	<!-- 사진 넣기 -->
+<!-- 	<insert id ="insertItem" parameterType="com.pearl.domain.PicDTO"> -->
+<!-- 	 insert all -->
+<!-- 	<foreach collection="list" item="item" separator=" "> -->
+<!-- 	<![CDATA[ -->
+<!-- 	into t_file -->
+<!-- 	(FUNDNUM, ORIGINAL_FILE_NAME, STORED_FILE_PATH, FILE_SIZE, CREATOR_ID, CREATED_DATETIME)  -->
+<!-- 	values  -->
+<!-- 	]]> -->
+		
+<!-- 			( -->
+<!-- 				#{item.fundNum},  -->
+<!-- 				#{item.originalFileName}, -->
+<!-- 				#{item.storedFilePath}, -->
+<!-- 				#{item.fileSize},  -->
+<!-- 				'admin',  -->
+<!-- 				sysdate -->
+<!-- 			) -->
+<!-- 		</foreach> -->
+<!-- 		select * from dual -->
+<!-- 	</insert> -->
+
+	
+</mapper>

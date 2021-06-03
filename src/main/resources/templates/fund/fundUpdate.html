@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+
+	<header th:replace="fragments/header :: header"> </header>
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="ftco-section ftco-degree-bg">
+		<div class="container">
+			<form th:action="@{modify}" method="POST" id="itemSubmit">
+				<div class="row">
+					<div class="col-lg-8 ftco-animate">
+						<div class="form-group">
+							<input type="text" th:value="${detail.fundTitle}"
+								class="form-control" name="fundTitle" id="fundTitle">
+						</div>
+						<!--------------- 사진업로드 ------------->
+						<div class="custom-file" id="inputFile"
+							style="margin: 3px 0 20px 0;">
+							<input name="file" type="file" class="custom-file-input"
+								id="customFile" access="image/*"> <label
+								class="custom-file-label" for="customFile">사진을 업로드 하세요.</label>
+						</div>
+						<div class="select_img" style="margin: 0 0 12px 0;">
+							<img id="uploadImg" th:if="${detail.pic} ne null"
+								th:src="@{'/gallery/display?fileName='+${detail.pic.picPath}+'/'+${detail.pic.picUuid}+'_'+${detail.pic.picName}+'.'+${detail.pic.picTail}}" />
+							<img id="uploadImg" th:unless="${detail.pic} ne null"/>
+						</div>
+
+						<div class="sidebar-box ftco-animate">
+							<h3>Introduce</h3>
+							<textarea th:text="${detail.fundIntro}" name="fundIntro"
+								id="fundIntro" rows="10" cols="88"></textarea>
+						</div>
+					</div>
+					<!-- .col-md-8 -->
+
+					<div class="col-lg-4 sidebar pl-lg-5 ftco-animate">
+						<div class="sidebar-box">
+							<div style="margin: 0px 7px 7px 0px;">
+								<img
+									th:src="@{'/gallery/display?fileName='+${artist.profile.picPath}+'/'+${artist.profile.picUuid}+'_'+${artist.profile.picName}+'.'+${artist.profile.picTail}}"
+									th:if="${artist.profile}!=null" alt="Image placeholder"
+									style="width: 40px; height: 40px; border-radius: 20px;">
+								<img th:src="@{/images/aboutpearl.jpg}"
+									th:unless="${artist.profile}!=null" alt="Image placeholder"
+									style="width: 40px; height: 40px; border-radius: 20px;">
+								<span th:text="${artist.memName}">작가명</span><span>&nbsp;&nbsp;작가님
+									펀딩 </span> <span class="tagcloud"> <span> <a
+										class="tag-cloud-link"
+										style="background-color: #19a2b8; color: white;">Proceeding</a>
+								</span>
+								</span>
+
+
+							</div>
+
+							<div class="form-group">
+								<label>목표 금액</label>
+								<div>
+									<div
+										th:text="${#numbers.formatInteger(detail.fundMoney,3,'COMMA')+'원'}"
+										class="form-control"></div>
+								</div>
+							</div>
+							<div>
+								<label>달성률</label>
+								<div text="100%"
+									th:text="${#numbers.formatDecimal(detail.total*1.0/detail.fundMoney*100,3,2)+'%'}"
+									class="form-control"></div>
+							</div>
+							<div>
+								<label>현재 모금액</label>
+								<div
+									th:text="${#numbers.formatInteger(detail.total,3,'COMMA')+'원'}"
+									class="form-control"></div>
+							</div>
+							<div>
+								<label>참여인원</label>
+								<div th:text="${detail.attend+'명'}" class="form-control"></div>
+							</div>
+							<div>
+								<label>전시일자</label> <span
+									th:text="${#dates.format(detail.fundDday,'yyyy-MM-dd')}"
+									class="form-control"> </span>
+							</div>
+						</div>
+
+						<div class="sidebar-box ftco-animate">
+							<div class="categories">
+								<li><div>펀딩 기간</div>
+									<div class="row">
+										<div
+											th:text="${#dates.format(detail.fundStartDate,'yyyy-MM-dd')}"
+											style="width: 160px; position: relative; left: 15px;"></div>
+										<div
+											th:text="${#dates.format(detail.fundEndDate,'yyyy-MM-dd')}"
+											style="width: 160px; position: relative; right: 0px;"></div>
+									</div></li>
+
+								<li>
+									<div>
+										상품 등록
+										<div class="tagcloud">
+											<input type="button" id="add" class="tag-cloud-link"
+												onclick="addItem()" value="add"
+												style="width: 37pt; height: 20pt; position: relative; left: 255px;">
+										</div>
+									</div>
+									<div class="row">
+										<input type="text" id="productName"
+											placeholder="Product Name"
+											style="width: 160px; position: relative; left: 15px;">
+										<input type="text" id="productPrice"
+											placeholder="Price"
+											style="width: 160px; position: relative; right: 0px;">
+									</div>
+								</li>
+								<h6 style="font-weight: 800;">등록된 상품</h6>
+								<br>
+								<div id="attach-item">
+									<input type="hidden" name="itemList" id="itemList">
+									<div id="register-item">
+										<li id="item-form" style="float: left; width: 100%;">
+											<div id="item-name" style="float: left; margin: 0 20px 0 0;">
+											</div>
+											<div id="item-price" style="float: left;"></div>
+
+										</li>
+
+									</div>
+									<!-- <div th:id="register-item+${i.index}" th:each="f,i =${}">
+										<li id="item-form" style="float: left; width:80%;">
+											<input type="text" id="item-name" name="rwvo['+count+'].rwrdName"
+												style="width: 50%;float: left;margin:0 10px 0 0;" readonly 
+											value="'+item+'">
+											<input type="number" id="item-price'+count+'" name="rwvo['+count+'].rwrdPrice"
+												 style="float: left;width: 40%;" readonly 
+											value='+price+'>
+										</li>
+										<div class="tagcloud" style="float:left; width:20%;">
+											<a class="tag-cloud-link" onclick="deleteItem(count)">delete</a>
+										</div>
+									</div> -->
+								</div>
+
+								<input type="hidden" name="fundNum" th:value="${detail.fundNum}">
+								<input type="hidden" name="itemList" id="itemList"> <input
+									type="hidden" name="memNum" th:value="${artist.memNum}">
+								<input type="hidden" name="memEmail"
+									th:value="${artist.memEmail}">
+
+
+							</div>
+						</div>
+						<div>
+							<input type="submit" value="Update"
+								class="btn btn-primary d-block px-2 py-3"
+								style="float: left; width: 50%;"><input type="button"
+								value="Cancel" onclick="history.back(-1);"
+								class="btn btn-secondary d-block px-2 py-3"
+								style="float: left; width: 50%">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+	<!-- .section -->
+
+	<script>
+		var count = 0;
+		var countItem = 0;
+		var total = 0;
+		var basic = 1;
+		
+		var countItem = 0;
+		var count = 0;
+		var itemList = [];
+		function addItem() {
+			var productName = $("#productName");
+			var productPrice = $("#productPrice");
+			var item = productName.val();
+			var price = productPrice.val()*1;
+
+			$("#attach-item")
+					.prepend(
+							'<div id="register-item'+count+'"><li id="item-form" style="float: left; width:80%;">'
+									+ '<input type="text" id="item-name" name="rwvo['+count+'].rwrdName"'
+									+ 'style="width: 50%;float: left;margin:0 10px 0 0;" readonly '
+									+ 'value="'+item+'">'
+									+ '<input type="number" id="item-price'+count+'" name="rwvo['+count+'].rwrdPrice"'
+									+ ' style="float: left;width: 40%;" readonly '
+									+ 'value='+price+'>'
+									+ '</li><div class="tagcloud" style="float:left; width:20%;">'
+									+ '<a class="tag-cloud-link" onclick="deleteItem('
+									+ count + ')">delete</a></div></div>');
+			
+			itemList.push({
+				"productName" : item,
+				"productPrice" : price
+			});
+			productName.val("");
+			productPrice.val("");
+			count++;
+			countItem++;
+			
+		}
+
+		function deleteItem(cnt) {
+			var id = '#register-item' + cnt;
+			$(id).remove();
+			countItem--;
+		}
+		
+		$(".custom-file-input").change(function() {
+			var file = $(this)[0].files;
+			var fileName = $(this).val();
+			console.log(""+fileName);
+			var fileExt = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+			console.log(""+fileExt);
+			console.log(""+file[0].size);
+			if(fileExt!="jpg"&&fileExt!="jpeg"&&fileExt!="gif"&&fileExt!="png"&&fileExt!="bmp"){
+				alert("이미지 파일이 아닙니다");
+				$(this).val("");
+				return;
+			} else if(file[0].size >= 5242880){
+				alert("5MB이하의 이미지만 사용가능합니다");
+				return false;
+			}
+			
+		if(this.files&& this.files[0]){
+			var reader = new FileReader;
+			reader.onload = function(data){
+				$('#uploadImg').attr("src", data.target.result).width(720);    
+			}
+			reader.readAsDataURL(this.files[0]);
+		}
+	  var fileName = $(this).val().split("\\").pop();
+	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+	</script>
+	<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

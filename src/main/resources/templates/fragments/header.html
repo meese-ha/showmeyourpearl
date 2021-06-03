@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<header>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+		crossorigin="anonymous "></script>
+	
+	<div class="wrap">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 d-flex align-items-center">
+					<p class="mb-0 phone pl-md-2">
+						<a class="mr-2"><span class="fa fa-phone mr-1"></span>
+							+119</a> <a><span class="fa fa-paper-plane mr-1"></span>
+							4yourpearl@email.com</a>
+					</p>
+				</div>
+				<div class="col-md-6 d-flex justify-content-md-end">
+					<div class="social-media">
+						<p class="mb-0 d-flex" style="padding-bottom:5px;">
+							<span sec:authorize="isAuthenticated()" 
+								class="d-flex align-items-center justify-content-center nav-header" 
+								th:text="${#authentication.principal.member.memName+'님'}"></span>
+							<a sec:authorize="hasAnyRole('ROLE_MEMBER','ROLE_ADMIN')" href="/mypage"
+								class="d-flex align-items-center justify-content-center nav-header" style="margin-left:20px;"><span>My</span></a>
+							<a sec:authorize="hasRole('ROLE_ADMIN')" href="/admin/member"
+								class="d-flex align-items-center justify-content-center nav-header" style="margin-left:20px;"><span>Admin</span></a>
+							<a sec:authorize="isAnonymous()" href="/login"
+								class="d-flex align-items-center justify-content-center nav-header" style="margin-left:20px;"><span>Login</span></a>
+							<a sec:authorize="isAuthenticated()" href="/logout"
+								class="d-flex align-items-center justify-content-center nav-header" style="margin-left:20px;"><span>Logout</span></a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav
+		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+		id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand nav-header" href="/" id="navHome"><span
+				class="flaticon mr-2"></span>Show Me Your Pearl</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse"
+				data-target="#ftco-nav" aria-controls="ftco-nav"
+				aria-expanded="false" aria-label="Toggle navigation">
+				<span class="fa fa-bars"></span> Menu
+			</button>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item" id="navGallery"><a href="/gallery/list" class="nav-link">Gallery</a></li>
+					<li class="nav-item" id="navFunding"><a href="/fund/fundList" class="nav-link">Funding</a></li>
+					<li class="nav-item" id="navNotice"><a href="/notice/list"	class="nav-link">Notice</a></li>
+					<li class="nav-item" id="navAbout"><a href="/" class="nav-link">About</a></li>
+					<li class="nav-item" id="navContact"><a href="/" class="nav-link">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<script>
+		$('.nav-item').click(function(){
+			$('.nav-item').removeClass('active');
+			$(this).addClass('active');
+			sessionStorage.setItem('nav',$(this).attr('id'));
+		});
+		
+		$('.nav-header').click(function(){
+			sessionStorage.setItem('nav','');
+		});
+		
+		$(document).ready(function() {
+			var url = document.location.href.split('/');
+			if(url[3]==''){
+				if(sessionStorage.getItem('nav')=='navContact'){
+					$('html,body').animate({scrollTop:($('#contact').offset().top-150)}, 500);
+				}else if(sessionStorage.getItem('nav')=='navAbout'){
+					$('html,body').animate({scrollTop:($('#about').offset().top-150)}, 500);
+				}
+			}
+			SetClass();
+		});
+
+		function SetClass() {
+			var id = '#'+sessionStorage.getItem('nav');
+		    $(id).addClass('active');
+		}
+	</script>
+	<!-- END nav -->
+</header>
+</html>

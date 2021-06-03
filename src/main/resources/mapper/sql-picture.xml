@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pearl.mapper.PictureMapper">
+
+	<insert id="insertPic">
+		insert into picture
+		values(picture_SEQ.nextval, #{picUuid}, #{picPath}, #{picName}, #{picTail}, #{picClass}, #{postNum})
+	</insert>
+	
+	<select id="getPic" resultType="com.pearl.domain.PictureVO">
+		select * from picture where postnum = #{boardNum} and picclass = 'c'
+	</select>
+	
+	<select id="getPicF" resultType="com.pearl.domain.PictureVO">
+		select * from picture where postnum = #{boardNum} and picclass = 'f'
+	</select>
+	
+	<select id="getProfile" resultType="com.pearl.domain.PictureVO">
+		select * from picture where postnum = #{memNum} and picclass = 'p'
+	</select>
+	
+	<update id="updatePic">
+		update picture set picUuid=#{picUuid}, picPath=#{picPath}, picName=#{picName}, picTail=#{picTail}
+		where postNum = #{postNum} and picclass = #{picClass}
+ 	</update>
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pearl.mapper.MainMapper">
+
+  <select id="list" resultType="com.pearl.domain.AdminBoardVO" >
+  	<![CDATA[   select b.*,m.memname,p.*
+     from board b, member m, picture p,(select boardnum,cnt 
+     from (SELECT boardNum, COUNT(EMOEXPRESS) as cnt,ROW_NUMBER() OVER (ORDER BY count(EMOEXPRESS) DESC) AS RANK FROM EMOTION GROUP BY boardNum) where rank <=3) a
+     where a.boardnum=b.boardnum and m.memnum=b.memnum and a.boardnum = p.postnum and p.picclass='c']]>	
+  </select> 
+    
+   
+    
+   <select id="fundlist" resultType="com.pearl.domain.AdminFundVO">
+  	<![CDATA[     select f.*,m.memname,p.*
+    from fund f, member m, picture p,
+    (select fundnum, cnt from ( SELECT fundnum, COUNT(paynum) cnt ,ROW_NUMBER() OVER 
+  	(ORDER BY count(paynum) DESC) AS RANK FROM payment GROUP BY fundnum) where rank <=3 ) a
+    where a.fundnum = f.fundnum and f.memnum = m.memnum and picclass='f' and p.postnum = f.fundnum and sysdate <= f.fundenddate ]]>	
+  </select> 
+  
+ 	
+  
+  </mapper>

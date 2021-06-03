@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pearl.mapper.GalleryMapper">
+
+	<select id="list" resultType="com.pearl.domain.GalleryVO">
+		select * from
+		<choose>
+		<when test="allign != null and allign != ''">
+			(select row_number() over(order by emo desc) rn, b.*,e.emo, m.memname from board b 
+			,member m, (select boardnum, count(
+			<choose>
+				<when test="'favorite'.equals(allign)">
+					emoexpress
+				</when>
+				<when test="'like'.equals(allign)">
+					case emoexpress when 'a' then 1 end
+				</when>
+				<when test="'sad'.equals(allign)">
+					case emoexpress when 'b' then 1 end
+				</when>
+				<when test="'angry'.equals(allign)">
+					case emoexpress when 'c' then 1 end
+				</when>
+				<when test="'happy'.equals(allign)">
+					case emoexpress when 'd' then 1 end
+				</when>
+			</choose>
+			) emo from board left 
+			join emotion using(boardnum) group by boardnum) e 
+			where e.boardnum=b.boardnum and b.memnum =m.memnum and b.boardtype = 'c'
+		</when>
+		<otherwise>
+			(select /*+INDEX_desc(b board_pk)*/ rownum rn, b.*, m.memname 
+			from Board b, member m
+			where b.memnum=m.memnum and boardnum > 0 and boardtype='c' 
+		 </otherwise>
+		 </choose>
+		<include refid="sql-search.search" />
+	<![CDATA[  
+			) where rn <=#{pagiInfo.lastRecordIndex} and rn > #{pagiInfo.firstRecordIndex}
+	]]>
+	</select>
+	
+	
+	
+	<select id="selectTotalCount" resultType="int">
+		select count(*) from board join member using(memnum) where boardtype='c'
+		<include refid="sql-search.search" />
+	</select>
+	
+	<select id="read" resultType="com.pearl.domain.GalleryVO">
+		select * from Board 
+		where boardnum = #{boardNum}
+	</select>
+	
+	<select id="readWriter" resultType="com.pearl.domain.MemberVO">
+		select * from member 
+		where memnum = #{memNum}
+	</select>
+	
+	<insert id="insert">
+	<selectKey keyProperty="boardNum" resultType="Long" order="BEFORE">
+		select BOARD_SEQ.nextval from dual
+	</selectKey>
+		insert into Board(boardNum, memNum, boardTitle, boardContent, boardDate, boardType)
+		values(#{boardNum}, #{memNum}, #{boardTitle}, #{boardContent}, sysdate, 'c')
+	</insert>
+	
+	<delete id="delete">
+		delete Board 
+		where boardNum=#{boardNum}
+	</delete>
+	
+	<update id="update">
+		update Board  
+		set boardTitle=#{boardTitle}, boardContent=#{boardContent}  
+		where boardNum = #{boardNum}
+	</update>
+	
+	<insert id="emotionInsert">
+		insert into emotion values(emotion_seq.nextval, #{boardNum}, #{memNum},#{emoExpress})
+	</insert>
+	
+	<select id="getEmo" resultType="com.pearl.domain.EmotionVO">
+		select * from emotion where boardNum=#{boardNum} and memNum=#{memNum}
+	</select>
+	
+	<update id="updateEmo">
+		update emotion set emoExpress=#{emoExpress} where boardNum=#{boardNum} and memNum=#{memNum}
+	</update>
+	
+	<select id="nowFunding" resultType="Long">
+		select distinct(memnum) from fund where to_char(fundenddate) >=to_char(sysdate)
+	</select>
+	
+	<select id="nowFund" resultType="Long">
+		select max(fundnum) from fund where to_char(fundenddate) >=to_char(sysdate) and memnum=#{memNum}
+	</select>
+	
+</mapper>

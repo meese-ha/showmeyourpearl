@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pearl.mapper.AdminMapper">
+
+	<select id="boardList"
+		resultType="com.pearl.domain.AdminBoardVO">
+		select /*+INDEX(board board_pk)*/
+		b.boardNum, b.boardTitle,
+		b.memNum, m.memName, m.memEmail, b.boardDate
+		from member m, board b
+		where b.boardtype = 'c' and b.memNum = m.memNum
+	</select>
+	
+   <select id="test" resultType="com.pearl.domain.MemberVO"> 
+    select*from (select rownum rn, m.* from member m where memlevel='member' <include refid="memsearch" />) 
+    where rn between #{pagiInfo.firstRecordIndex} and #{pagiInfo.lastRecordIndex} 
+   </select>
+   
+  <sql id="memsearch">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'title'.equals(searchType)">
+							AND memnum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'content'.equals(searchType)">
+							AND mememail LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'writer'.equals(searchType)">
+							AND memname LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   memnum LIKE '%' || #{searchKeyword} || '%'
+							OR mememail LIKE '%' || #{searchKeyword} || '%'
+							OR memname LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+    <select id="adminmem" resultType="com.pearl.domain.MemberVO"> 
+      select*from (select rownum rn, m.* from member m where memlevel='admin' <include refid="memsearch" />) 
+      where rn between #{pagiInfo.firstRecordIndex} and #{pagiInfo.lastRecordIndex} 
+   </select>
+   
+   <select id="selectTotalCount" resultType="int">
+       select count(*) from member where memlevel ='member'
+   </select>
+   <select id="selectTotalCount5" resultType="int">
+       select count(*) from member where memlevel ='admin'
+   </select>
+   
+   <select id="boardpage" resultType="com.pearl.domain.BoardVO">
+   	select*from
+ 	(select row_number() over (order by boarddate desc) rn, b.*, m.memname, m.mememail
+    from board b, member m
+    where b.memnum = m.memnum <include refid="boardsearch" /> )
+    where rn between #{pagiInfo.firstRecordIndex} and #{pagiInfo.lastRecordIndex}
+   </select>
+   
+    <sql id="boardsearch">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'boardnum'.equals(searchType)">
+						and	boardnum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'boardtitle'.equals(searchType)">
+						and boardtitle LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'boardwriter'.equals(searchType)">
+							AND memname LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+					
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   boardnum LIKE '%' || #{searchKeyword} || '%'
+							OR boardtitle LIKE '%' || #{searchKeyword} || '%'
+							OR memname LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+   
+   <select id="selectTotalCount2" resultType="int">
+      select count(*) from board b, member m, picture p where b.memnum= m.memnum and b.boardnum = p.postnum and boardtype='c'
+   </select>
+
+ 	<select id="fundpage" resultType="com.pearl.domain.AdminFundVO">
+         select*from (select row_number() over(order by funddday) rn, y.*
+    from  ( select f.*, x.nowtotal, m.memname, m.mememail from member m, fund f,
+    (select f.fundnum, nvl(sum(paytotal),0) nowtotal from FUND F full outer join payment p on f.fundnum = p.fundnum
+     group by f.fundnum) x where f.memnum = m.memnum and x.fundnum = f.fundnum ) y <include refid="fundsearch" /> )
+     where rn between #{pagiInfo.firstRecordIndex} and #{pagiInfo.lastRecordIndex}
+  	</select>
+  	
+ <sql id="fundsearch">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+		where
+		<trim prefixOverrides="and">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'fundnum'.equals(searchType)">
+						and	fundnum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'fundtitle'.equals(searchType)">
+						and fundtitle LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'fundwriter'.equals(searchType)">
+							AND memname LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+					
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   fundnum LIKE '%' || #{searchKeyword} || '%'
+							OR fundtitle LIKE '%' || #{searchKeyword} || '%'
+							OR memname LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+			</trim>
+		</if>
+	</sql>
+
+	<select id="selectTotalCount3" resultType="int">
+      select count(*) from fund 
+   </select>
+
+ 	<select id="paymentpage" resultType="com.pearl.domain.AdminPaymentVO">
+  	select*from (select rownum rn, p.* from payment p <include refid="paysearch" /> ) where rn between #{pagiInfo.firstRecordIndex} and #{pagiInfo.lastRecordIndex}
+  	</select>
+
+<sql id="paysearch">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+		where
+		<trim prefixOverrides="and">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'paynum'.equals(searchType)">
+						and	paynum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'memnum'.equals(searchType)">
+						and memnum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'fundnum'.equals(searchType)">
+							AND fundnum LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+					
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   paynum LIKE '%' || #{searchKeyword} || '%'
+							OR memnum LIKE '%' || #{searchKeyword} || '%'
+							OR fundnum LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+			</trim>
+		</if>
+	</sql>
+
+	<select id="selectTotalCount4" resultType="int">
+      select count(*) from payment 
+   </select>
+
+
+
+
+	<select id="fundList" resultType="com.pearl.domain.AdminFundVO">
+		select /*+INDEX(fund fund_pk)*/
+		f.fundNum, m.memNum, m.memName, m.memEmail, f.fundStartDate,
+		f.fundEndDate, f.fundMoney, f.fundTitle, fundIntro
+		from member m, fund
+		f
+		where f.memNum = m.memNum
+	</select>
+
+
+	<select id="paymentList"
+		resultType="com.pearl.domain.AdminPaymentVO">
+		select /*+INDEX(payment payment_pk)*/
+		*
+		from payment
+	</select>
+
+	<select id="searchPaymentList"
+		resultType="com.pearl.domain.AdminPaymentVO">
+		select /*+INDEX(payment payment_pk)*/
+		*
+		from payment
+		<if test="searchType == 'all'">
+		
+		</if>
+		<if test="searchType == 'payNum'">
+			where payNum = #{searchValue}
+		</if>
+		<if test="searchType == 'memNum'">
+			where memNum = #{searchValue}
+		</if>
+		<if test="searchType == 'fundNum'">
+			where fundNum = #{searchValue}
+		</if>
+	</select>
+
+	
+
+
+	<delete id="fundDelete">
+		DELETE FROM fund
+		<where>
+			<foreach item="fundNum" index="index" collection="array"
+				open="fundNum IN (" close=")" separator=",">
+				#{fundNum}
+			</foreach>
+		</where>
+	</delete>
+	
+		<delete id="paymentDelete">
+		DELETE FROM payment
+		<where>
+			<foreach item="payNum" index="index" collection="array"
+				open="payNum IN (" close=")" separator=",">
+				#{payNum}
+			</foreach>
+		</where>
+	</delete>
+
+	<delete id="memberDelete">
+		DELETE FROM member
+		<where>
+			<foreach item="memNum" index="index" collection="array"
+				open="memNum IN (" close=")" separator=",">
+				#{memNum}
+			</foreach>
+		</where>
+	</delete>
+
+	<delete id="postDelete">
+		DELETE FROM board
+		<where>
+			<foreach item="boardNum" index="index" collection="array"
+				open="boardNum IN (" close=")" separator=",">
+				#{boardNum}
+			</foreach>
+		</where>
+	</delete>
+
+</mapper>

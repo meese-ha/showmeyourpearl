@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+	<!-- END nav -->
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="ftco-section bg-light">
+		<form method="POST" id="contactForm" name="contactForm"
+			th:action="pay" class="contactForm">
+			<div class="container">
+				<div class="contact-wrap w-100 p-md-5 p-4" >
+					<div>
+						<h3 class="mb-4">Product Information</h3>
+						<span style="font-size: 2.0em" th:text="${artist.memName}">정원빈</span><span>&nbsp;&nbsp;작가님의</span>
+						<span th:text="${fund.fundTitle}"></span>
+					</div>
+
+					<div style="float: left; margin: 3px 10px 3px 1px;">
+						<img
+							th:src="@{'/gallery/display?fileName='+${fund.pic.picPath}+'/'+${fund.pic.picUuid}+'_'+${fund.pic.picName}+'.'+${fund.pic.picTail}}"
+							th:if="${fund.pic} ne null" alt="" class="img-fluid"
+							style="width: 84%; float: left; margin:0 0 50px 0;">
+					</div>
+				</div>
+
+				<div class="contact-wrap w-100 p-md-5 p-4">
+					<div>
+						<table border="1" width="50%" height="200" cellspacing="5" style="margin:0 0 20px 0;">
+							<thead>
+								<tr align="center" bgcolor="white">
+									<th>Reward Product</th>
+									<th>Count</th>
+									<th>Price</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr align="center" bgcolor="white" th:each="r : ${reward}" th:if="${r.rwrdName} ne null">
+									<th th:text="${r.rwrdName}"></th>
+									<td th:text="${r.rwrdCnt}"></td>
+									<td th:text="${r.rwrdPrice*r.rwrdCnt+'원'}"></td>
+								</tr>
+
+							</tbody>
+						</table>
+						<span>상품 소계 : </span> <input type="text" id="subSum" readonly
+							th:value="${fund.rwrdTotal}" style="margin:0 20px 0 0;">
+							<span>추가 후원금 : </span><input type="number" value="0" id="payDona" name="payDona"> <input type="button"
+							value="Donation" onclick="sponsor()">
+					</div>
+					<div th:each="r,i : ${reward}" th:if="${r.rwrdName} ne null">
+									<input type="hidden" th:value="${r.rwrdNum}" th:name="|item[${i.index}].rwrdNum|">
+									<input type="hidden" th:value="${r.rwrdCnt}" th:name="${'item['+i.index+'].rwrdCount'}">
+					</div>
+					<div class="col-md-6">
+						<div style="margin: 20px;"><span style="font-size:25px;"> 결제 금액&nbsp;&nbsp;&nbsp;: </span>
+							<input type="number" name="payTotal" id="payTotal" readonly dir="rtl" 
+							style ="width: 150px; margin: 0 10px 0 25px;border:none;border-right:0px; border-top:0px; boder-left:0px; boder-bottom:1px;font-size:25px;"
+								th:value="${fund.rwrdTotal}"><span style="font-size:25px;">  원</span>
+						</div>
+					</div>
+				</div>
+
+				<div>
+					<div class="col-md-12">
+						<div class="wrapper">
+							<div class="row mb-5">
+								<div class="col-md-3">
+									<div class="dbox w-100 text-center"></div>
+								</div>
+							</div>
+							<div class="row no-gutters">
+								<div class="col-md-7">
+									<div class="contact-wrap w-100 p-md-5 p-4">
+										<h3 class="mb-4">Shipping information</h3>
+
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="label" for="name">Receiver</label> <input
+														type="text" class="form-control" id="receiver"
+														placeholder="Name">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="label">Address</label><input type=button
+														value="Zip Code" class="btn btn-info" onclick="findZip()"
+														style="padding: 2px; margin: 0 0 0 10px;"> <input
+														type="text" class="form-control" id="zipCode" readonly
+														placeholder="Zip Code"> <input type="text"
+														class="form-control" name="Address" id="Address"
+														placeholder="Address" readonly><input type="text"
+														class="form-control" name="Address2" id="Address2"
+														placeholder="Address Detail">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="label" for="subject">Contact</label> <input
+														type="text" class="form-control"
+														placeholder="Contact Number" id="contactNumber">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="label" for="#">Message</label>
+													<textarea name="message" class="form-control" id="message"
+														cols="30" rows="4" placeholder="Message"></textarea>
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+							<div class="row no-gutters">
+								<div class="col-md-7">
+									<div class="contact-wrap w-100 p-md-5 p-4">
+										<h3 class="mb-4">Card information</h3>
+
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="label">Card Number</label> <input
+														type="text" class="form-control" name="payCardNum"
+														placeholder="16 Digit Card Number" id="cardNum"
+														maxlength="16">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="label">CVC</label> <input type="text"
+														class="form-control" name="payCvc" id="cardCvc"
+														placeholder="3 DIGIT" maxlength="3">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="label">Valid Date</label> <input
+														type="text" class="form-control" name="payCardExpire"
+														id="cardExpire" placeholder="MMYY" maxlength="4">
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+							<div class="contact-wrap w-100 p-md-5 p-4">
+								<input type="submit" class="btn btn-primary" value="Payment"
+									form="contactForm" id="paySubmit"> <input type="button"
+									class="btn btn-secondary" value="Cancel">
+								<input type="hidden" name="fundNum" th:value="${fund.fundNum}">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</section>
+	<script
+		src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
+		function sponsor() {
+			var dona = parseInt($('#payDona').val());
+			var subTotal = parseInt($('#subSum').val());
+
+			var total = dona + subTotal;
+			$('#payTotal').val(total);
+
+		}
+		function findZip() {
+			new daum.Postcode(
+					{
+						oncomplete : function(data) {
+
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if (data.userSelectedType === 'R') {
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if (data.bname !== ''
+										&& /[동|로|가]$/g.test(data.bname)) {
+									extraAddr += data.bname;
+								}
+
+								if (data.buildingName !== ''
+										&& data.apartment === 'Y') {
+									extraAddr += (extraAddr !== '' ? ', '
+											+ data.buildingName
+											: data.buildingName);
+								}
+
+								if (extraAddr !== '') {
+									extraAddr = ' (' + extraAddr + ')';
+								}
+
+								$("#Address2").val(extraAddr);
+
+							} else {
+								$("#Address2").val('');
+							}
+
+							$("#zipCode").val(data.zonecode);
+							$("#Address").val(addr);
+
+							$("#Address2").focus();
+						}
+					}).open();
+		}
+		
+		$('#paySubmit').click(function(){
+			event.preventDefault();
+			var regExp = /^[0-9]*$/;
+			if($('#receiver').val()==''){
+				alert('받으시는 분의 성함을 입력해주세요.');
+				$('#receiver').focus();
+				return;
+			}else if($('#zipCode').val()==''){
+				alert('우편번호를 선택해주세요.');
+				findZip();
+				return;
+			}else if($('#address').val()==''){
+				alert('받으시는 분의 주소를 입력해주세요.');
+				$('#address').focus();
+				return;
+			}else if($('#address2').val()==''){
+				alert('받으시는 분의 주소를 입력해주세요.');
+				$('#address2').focus();
+				return;
+			}else if($('#contactNumber').val()==''){
+				alert('연락받으실 번호를 입력해주세요.');
+				$('#contactNumber').focus();
+				return;
+			}else if(!regExp.test($('#contactNumber').val())){
+				alert('-를 제외한 숫자만 입력해주세요.');
+				$('#contactNumber').focus();
+				return;
+			}else if($('#cardNum').val()==''){
+				alert('결제하실 카드 번호를 입력해주세요.');
+				$('#cardNum').focus();
+				return;
+			}else if(!regExp.test($('#cardNum').val())){
+				alert('-를 제외한 숫자만 입력해주세요.');
+				$('#cardNum').focus();
+				return;
+			}else if($('#cardCvc').val()==''){
+				alert('결제하실 카드의 cvc 세자리를 입력해주세요.');
+				$('#cardCvc').focus();
+				return;
+			}else if(!regExp.test($('#cardCvc').val())){
+				alert('숫자만 입력가능합니다.');
+				$('#cardCvc').val('');
+				$('#cardCvc').focus();
+				return;
+			}else if($('#cardExpire').val()==''){
+				alert('결제하실 카드의 유효기간을 입력해주세요.');
+				$('#cardExpire').focus();
+				return;
+			}else if(!regExp.test($('#cardExpire').val())){
+				alert('/를 제외한 숫자만 입력해주세요.');
+				$('#cardExpire').val('');
+				$('#cardExpire').focus();
+				return;
+			}
+			$('#contactForm').submit();
+		});
+		
+	</script>
+	<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

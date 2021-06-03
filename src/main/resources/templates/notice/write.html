@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+	<section th:replace="/fragments/section.html::section"></section>
+
+	<section class="hero-wrap hero-wrap-2" style="display: inline-block;">
+		<div class="row no-gutters">
+			<div class="col-md-7" style="margin: auto;">
+				<div class="contact-wrap w-100 p-md-5 p-4">
+					<h3 class="mb-4">공지 작성</h3>
+					<hr>
+					<form th:action="@{write}" method="POST" id="writeForm"
+						name="writeForm" class="contactForm">
+						<input type="hidden" name="boardType" id="boardType" value="N">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label class="label" for="name">제목</label> <input type="text"
+										class="form-control" name="boardTitle" id="boardTitle"
+										placeholder="Title">
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label class="label" for="subject">내용</label>
+									<textarea name="boardContent" cols="40" rows="20"
+										class="form-control" placeholder="Contents" id="boardContent"></textarea>
+								</div>
+							</div>
+							<a href="/notice/list" class="btn-custom d-flex"
+								style="margin-left: 0px"><span class="fa fa-chevron-left">
+							</span><i class="sr-only">Read more</i></a>
+							<div class="form-group" style="margin: auto">
+								<input type="submit" value="등록하기" id="regBtn"
+									class="btn btn-primary">
+								<div class="submitting"></div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<footer th:replace="fragments/footer :: footer"> </footer>
+	</section>
+</body>
+<script>
+	$(document).ready(function() {
+		$("#regBtn").click(function(e) {
+			e.preventDefault();
+			var id = $("#boardTitle").val();
+			var name = $("#boardContent").val();
+
+			if (id == "" || id == null) {
+				alert("제목을 입력해주세요");
+				$("#title").focus();
+				return false;
+			};
+			if (name == "" || name == null) {
+				alert("내용을 입력해주세요");
+				$("#content").focus();	
+				return false;
+			};
+			$("#writeForm").submit();
+		}); 
+	});
+</script>
+
+</html>

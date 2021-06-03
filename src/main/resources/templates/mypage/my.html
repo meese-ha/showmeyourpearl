@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<head th:insert="/fragments/head.html::head" th:remove="tag">
+	</head>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<style>
+.info{
+ 	margin-bottom: 1.3em;
+}
+
+
+.btn{
+	font-size: 1.1em;
+}
+
+.haha{
+	position: relative;
+
+}
+
+.haha2{
+	position: absolute;
+	bottom:200px;
+	
+	}
+
+
+.nickname{
+	font-size: 3em;
+	font-weight: bold;
+	margin-left:20em;
+	margin-bottom:1em;
+	float: left;
+	
+}
+
+
+.edit{
+	position:absolute;
+	font-size: 1.5em;
+	border-radius:10px;
+	background-color:#d4f5ce;
+	text-align: center;
+	margin-left:1em;
+	margin-top:0.8em;
+	border:0;
+
+}
+
+.num{
+	position: absolute;
+	margin-left:1000px;
+	bottom:150px;
+	font-size: 1.2em;
+	
+}
+
+.numm{
+	padding-left: 10px;
+	
+}
+
+.num1{
+	position: absolute;
+	float:left;
+ 	margin-left: 10px; 
+	
+}
+
+.num2{
+	position: absolute;
+	padding-top: 30px;
+}
+
+.num3{
+	position: absolute;
+	padding-top: 30px;
+	padding-left: 20px;
+	
+}
+
+.btn2{
+	position:absolute;
+	margin-left: 850px;
+	bottom: 10px;
+	
+}
+
+.Subscribe{
+	
+	font-size: 1.5em;
+	border-radius:10px;
+	text-align: center;
+	background-color: #f54e4e;
+	border:0;
+	
+}
+
+.Donation{
+	position:absolute;
+	margin-left:20px;
+	font-size: 1.5em;
+	border-radius:10px;
+	text-align: center;
+	background-color: #d9e4fc;
+	border:0;
+	
+}
+		
+.close{
+	position:absolute;
+	margin-left:270px;
+	background-color: white;
+	color: black;
+	padding: 15px 25px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+.modal{
+	position: fixed;
+	top: 0; left: 0;
+	width: 100%; height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items : center;
+}
+.md_overlay {
+	background-color: rgba(0, 0, 0, 0.6);
+	width: 100%; height: 100%;
+	position: absolute;
+}
+.md_content {
+	width: 40%;
+	position: relative;
+	padding: 50px 100px;
+	background-color: white;
+	text-align: center;
+	border-radius: 6px;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.20), 0 6px 6px rgba(0, 0, 0, 0.20);
+}
+
+.hidden {
+	display: none;
+}
+
+.show {
+	display: block;
+}
+.modal_text { padding: 30px; }
+
+.bank{
+	position:absolute;
+	font-size: 1.5em;
+	left:300px;
+}        
+        
+ .count{
+ 	position:absolute;
+    top:115px;
+    left:270px;
+    font-size: 1.5em;    
+
+        } 
+
+.btn.d-block.fund:hover{
+   		background-color: black;
+   		color: white;
+   }
+
+</style>
+   <style>
+   
+   
+   </style>
+  <body>
+
+   
+
+   
+	   <header th:replace="fragments/header :: header"> </header>
+    <section th:replace="/fragments/section.html::section"></section>
+    
+   
+			
+			
+	
+    <section class="ftco-section bg-light">
+    	<input type="hidden" th:value="${meminfo.memNum}" name="memNum">
+    	<input type="hidden" sec:authorize="isAuthenticated()" th:value="${#authentication.principal.member.memNum}" name="userNum">
+    
+     <div class="info">
+    
+    <img th:if="${meminfo.profile}!=null" 
+    th:src="@{'/gallery/display?fileName='+${meminfo.profile.picPath}+'/'+${meminfo.profile.picUuid}+'_'+${meminfo.profile.picName}+'.'+${meminfo.profile.picTail}}" 
+    width="300" height="300" class="pic">
+    <img th:unless="${meminfo.profile}!=null" 
+    src="http://placehold.it/300x300" alt="프로필 사진을 설정해주세요"
+    width="300" height="300" class="pic">
+    	<div class="haha"><div class="haha2"><p class="nickname" th:text="${meminfo.memName}"></p>
+    		<input type="button" value="Edit" class="edit" 
+    			onClick="location.href='/mypage/edit'" style="cursor:pointer"
+    			th:if="${#authentication.name}==${meminfo.memEmail}"></div>
+    		<div class="num"><span class="numm" th:text="${#lists.size(myGallery)}">photo</span><span class="num1">Photo</span>
+    		<span class="num2" id="subscribe" th:text="${subscriber}">subs</span><span class="num3">subscriber</span></div>
+    		<div class="btn2"><input type="button" value="Subscribe" class="Subscribe" id="btnSub" style="cursor:pointer"
+    			th:if="${#authentication.name}!=${meminfo.memEmail}" onclick="addSubscribe()">
+    		<input type="button" value="Donation" class="Donation" id="donation" style="cursor:pointer" onclick="modalstart"
+    			th:if="${#authentication.name}!=${meminfo.memEmail}"></div>
+    </div></div>	
+
+    	<div class="modal hidden">
+		<div class="md_overlay"></div>
+		<div class="md_content">
+			<h1 style="position:absolute;top:10px;left:260px;">Donation</h1>
+			<div th:if="${meminfo.memBank}!=null" class="modal_text">
+				 <span th:text="${meminfo.memBank}" class="bank"></span>
+      			 <span th:text="${meminfo.memAccount}" class="count"></span>
+			</div>
+			 <div th:unless="${meminfo.memBank}!=null" class="modal_text"><span>후원계좌가 없습니다</span></div>
+			<button class="close">Close</button>
+		</div>
+	</div>
+			<a class="btn d-block fund" id="fundmore" th:href='@{/fund/fundList(memNum=${meminfo.memNum})}'>
+			<span th:if="${#authentication.name}!=${meminfo.memEmail}"  th:text="${meminfo.memName+'님의 펀딩 보러가기→'}">
+			</span>
+			<span th:if="${#authentication.name}==${meminfo.memEmail}">내 펀딩 보러가기→
+			</span></a>
+			
+			<div class="container" name="mygal">
+				<div class="row mt-4 d-flex">
+					<div class="col-md-6 col-lg-3 ftco-animate" th:each="gallery : ${myGallery}" th:object="${gallery.picture}">
+						<div class="staff">
+							<div class="img-wrap d-flex align-items-stretch">
+								<a th:href="|@{/gallery/get}?boardNum=${gallery.boardNum}|" 
+              class="img align-self-stretch" 
+              th:style="'background-image: url(/gallery/display?fileName='+*{picPath}+'/'+*{picUuid}+'_'+*{picName}+'.'+*{picTail}+');'" th:if="${gallery.picture} ne null">
+              </a>
+							</div>
+							<div class="text pt-3 px-3 pb-4 text-center">
+ 								<a th:href="@{/gallery/get(boardNum=${gallery.boardNum})}"><h3 th:text="${gallery.boardTitle}">Title</h3></a>
+								<span class="position mb-2" th:text="${gallery.boardDate}">Date</span>
+								<p th:text="${gallery.boardContent}">Content</p>
+								<div class="faded">
+									<ul class="ftco-social text-center">
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="like"><span class="fa" th:text="${gallery.like>0?gallery.like:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="sad"><span class="fa" th:text="${gallery.sad>0?gallery.sad:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="angry"><span class="fa" th:text="${gallery.angry>0?gallery.angry:0}"></span></a></li>
+		                <li class="ftco-animate"><a class="d-flex align-items-center justify-content-center" id="happy"><span class="fa" th:text="${gallery.happy>0?gallery.happy:0}"></span></a></li>
+		              </ul>
+	              </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>		
+		</section>
+		<script th:inline="javascript">
+			  var subs = [[${subs}]];
+			
+			function addSubscribe(){
+				var artist = $("input[name=memNum]").val();
+				var audience = $("input[name=userNum]").val();
+				var token = $("meta[name='_csrf']").attr("content");
+				var header = $("meta[name='_csrf_header']").attr("content");
+				var param = {"artist":artist*1, "audience":audience*1}
+				console.log(param);
+				$.ajax({
+					method : 'POST',
+					url:'/subscribe',
+					data: JSON.stringify(param),
+					beforeSend: function(xhr){
+						xhr.setRequestHeader(header, token);
+					},
+					dataType:'text',
+					contentType:'application/json; charset=utf-8',
+					success:function(data){
+						if($('#btnSub').val()=='Subscribe'){
+						 	alert("구독하셨습니다");
+						 	$('#btnSub').css('background-color', 'pink');
+							$('#btnSub').val('Subscribed');
+						}else {
+						 	alert("구독해지하셨습니다");
+						 	$('#btnSub').css('background-color', '#f54e4e');
+							$('#btnSub').val('Subscribe');
+						}
+					 	$('#subscribe').text(data);
+						console.log(data);
+				 	},error:function(e){
+				 		console.log("ERROR : ", e);
+			            alert("로그인후 이용가능합니다.");
+			            //location.href="/login";
+					}
+				});
+			}
+		$(function(){
+			if(subs=="true"){
+				$('#btnSub').css('background-color', 'pink');
+				$('#btnSub').val('Subscribed');
+			}
+		});
+		
+			const openButton = document.getElementById("donation");
+			const modal = document.querySelector(".modal");
+			const closeButton = modal.querySelector(".close");
+				
+			const openModal = () => {
+				modal.classList.remove("hidden");
+			}
+		
+			openButton.onclick = function() {
+				modal.classList.remove("hidden");
+			} 
+		
+			const closeModal = () => {
+				modal.classList.add("hidden");
+			}
+			
+			closeButton.addEventListener("click", closeModal); 
+	
+		</script>
+<footer th:replace="fragments/footer :: footer"> </footer>
+    
+  </body>
+</html>

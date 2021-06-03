@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+<body>
+	<header th:replace="fragments/header :: header"> </header>
+
+	<div class="container">
+		<div class="row d-md-flex justify-content-center">
+			<div class="col-md-12 col-lg-6 half p-3 py-5 pl-lg-5">
+				<h2 class="mb-4">회원 정보 수정</h2>
+				<hr>
+			<form  th:action="@{/admin/modifyForm/delete}" method="POST" id="modifyForm" name="modifyForm" class="contactForm">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">회원 번호</label> <input type="text"
+									class="form-control" id="memNum" name="memNum"
+									th:value="${vo.memNum}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">이름</label> <input type="text"
+									class="form-control" id="memName" name="memName"
+									placeholder="Name" th:value="${vo.memName}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">이메일</label> <input type="text"
+									class="form-control" id="memEmail" name="memEmail"
+									placeholder="Email" th:value="${vo.memEmail}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">전화 번호</label> <input type="text"
+									class="form-control" id="PhoneNumber" name="memPhone"
+									placeholder="PhoneNumber" th:value="${vo.memPhone}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">비밀번호</label> <input
+									type="password" class="form-control" id="Password"
+									name="memPass" placeholder="Password" th:value="${vo.memPass}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">회원 등급</label> <input type="text"
+									class="form-control" id="memLevel" name="memLevel"
+									placeholder="Level" th:value="${vo.memLevel}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">은행</label> <input type="text"
+									class="form-control" id="memBank" name="memBank"
+									placeholder="Bank" th:value="${vo.memBank}" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="label" for="name">계좌번호</label> <input type="text"
+									class="form-control" id="memAccount" name="memAccount"
+									placeholder="Account" th:value="${vo.memAccount}" readonly>
+							</div>
+						</div>
+						<hr>
+					<div class="col-md-12">
+						<div class="form-group" >
+							<a href="/admin/member"><span class="fa fa-chevron-left"></span></a>
+							<input type="button" id="btnModify" value="수정하기"
+								class="btn btn-primary py-3 px-4"
+								style="width: 20%; float: right; margin: 5px;"  >
+						 	<input type="submit" id="btnDelete" value="삭제하기"
+								class="btn btn-danger py-3 px-4"
+								style="width: 20%; float: right; margin: 5px;">
+						</div>
+					</div>
+					</div>
+					</form>
+			</div>
+		</div>
+	</div>
+
+
+	<footer th:replace="fragments/footer :: footer"> </footer>
+	<script th:inline="javascript">	
+	
+	$( document ).ready( function() {
+		 /*<![CDATA[*/
+			 var memNum = [[${vo.memNum}]];
+		 /*]]*/
+		   	$("#btnModify").click(function(e){
+		    		e.preventDefault();
+		    		location.href='/admin/profileModify?memNum='+memNum; 
+		    	});
+// 		 $("#btnDelete").on('click', function() {  // 클래스값이 delete인 엘리먼트가 눌리면?
+// 					 window.location.href='/admin/member/delete?memNum=' + "@{vo.memNum}";
+				   
+// 		 });
+	});
+	 	</script>
+</body>
+</html>

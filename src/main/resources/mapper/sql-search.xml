@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="sql-search">
+
+	<sql id="search">
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'title'.equals(searchType)">
+							AND boardtitle LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'content'.equals(searchType)">
+							AND boardcontent LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'writer'.equals(searchType)">
+							AND memname LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   boardtitle LIKE '%' || #{searchKeyword} || '%'
+							OR boardcontent LIKE '%' || #{searchKeyword} || '%'
+							OR memname LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<sql id="searchFund">
+		<if test = "memNum != null and memNum != ''">
+			and f.memNum = #{memNum}
+		</if>
+		<if test="fundNow != null and fundNow != ''">
+			<choose>
+				<when test="'done'.equals(fundNow)">
+					and to_char(sysdate) > to_char(fundenddate)
+				</when>							
+				<when test="'now'.equals(fundNow)">
+					and to_char(fundenddate) >=to_char(sysdate) and to_char(sysdate) >= to_char(fundstartdate)
+				</when>							
+				<when test="'yet'.equals(fundNow)">
+					and to_char(fundstartdate) > to_char(sysdate)
+				</when>							
+			</choose>
+		</if>
+		<!-- 검색 키워드가 있을 때 -->
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<!-- 검색 유형이 있을 때 -->
+				<when test="searchType != null and searchType != ''">
+					<choose>
+						<when test="'title'.equals(searchType)">
+							AND fundtitle LIKE '%' || #{searchKeyword} || '%'
+						</when>
+						<when test="'writer'.equals(searchType)">
+							AND memname LIKE '%' || #{searchKeyword} || '%'
+						</when>
+					</choose>
+				</when>
+				<!-- 검색 유형이 없을 때 -->
+				<otherwise>
+					AND
+						(
+							   fundtitle LIKE '%' || #{searchKeyword} || '%'
+							OR memname LIKE '%' || #{searchKeyword} || '%'
+						)
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+</mapper>

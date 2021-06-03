@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="/fragments/head.html::head">
+</head>
+  <body>
+
+   <header th:replace="fragments/header :: header"> </header>
+<style>
+
+.fintro{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-wrap: break-word;
+	display: -webkit-box;
+	-webkit-line-clamp: 5; /* ellipsis line */
+	-webkit-box-orient: vertical;
+	/* webkit 엔진을 사용하지 않는 브라우저를 위한 속성. */
+	/* height = line-height * line = 1.2em * 3 = 3.6em  */
+	line-height: 1.2em;
+	height: 6.9em; 
+}
+
+.finfo{
+	width: 500px;
+}
+
+</style>
+    <section th:replace="/fragments/section.html::section"></section>
+    
+    <section style="min-height:500px;">
+    <nav th:replace="mypage/common :: nav"></nav>
+    
+  	<div class="ftco-animate fadeInUp ftco-animated"
+					style="display: inline-block; width: 75%; margin-left:20em;">
+					<div class="block-7">
+						<div class="text-center p-4">
+							<table class="styled-table" align="center"
+								style="width: 100%; table-layout:fixed;">
+								<thead style="color: black;">
+									<th>펀딩 번호</th>
+									<th>펀딩 제목</th>
+									<th>펀딩 기간</th>
+									<th>목표 금액</th>
+									<th>현재 금액</th>
+									<th class="finfo">펀딩 내용</th>
+								</thead>
+								<tbody>
+									<tr th:each="f : ${MyfundList}">
+										<td><a th:href="@{/fund/get(fundNum=${f.fundNum})}" th:text="${f.fundNum}">펀딩 번호</a></td>
+										<td th:text="${f.fundTitle}">펀딩 제목</td> 
+										<td th:text="|${#dates.format(f.fundStartDate,'yyyy-MM-dd')} ~ ${#dates.format(f.fundEndDate,'yyyy-MM-dd')}|"></td>
+										<td th:text="${f.fundMoney}">목표 금액</td>
+										<td th:text="${f.nowtotal}">현재 금액</td>
+										<td th:text="${f.fundIntro}" class="fintro">펀딩 내용</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+	</section>
+<footer th:replace="fragments/footer :: footer"> </footer>
+    
+  </body>
+</html>
